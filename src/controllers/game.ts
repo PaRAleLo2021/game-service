@@ -1,10 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
-import User from '../models/user';
+import User from '../models/game';
 
 const NAMESPACE = 'Sample Controller';
 
-const createUser = (req: Request, res: Response, next: NextFunction) => {
+const createGame = (req: Request, res: Response, next: NextFunction) => {
+    //to be modified
     let { username, password, email } = req.body;
 
     const user = new User({
@@ -29,7 +30,7 @@ const createUser = (req: Request, res: Response, next: NextFunction) => {
         });
 };
 
-const getAllUsers = (req: Request, res: Response, next: NextFunction) => {
+const getAllGames = (req: Request, res: Response, next: NextFunction) => {
     User.find()
     .exec()
         .then((users) => {
@@ -46,4 +47,4 @@ const getAllUsers = (req: Request, res: Response, next: NextFunction) => {
         });
 };
 
-export default { createUser, getAllUsers };
+export default { createGame, getAllGames };

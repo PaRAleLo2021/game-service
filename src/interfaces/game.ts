@@ -1,6 +1,6 @@
 import {Document} from 'mongoose';
 
-export default interface IUser extends Document{
+export default interface IGame extends Document{
     username: string;
     password: string;
     email: string;

@@ -14,14 +14,14 @@ const MONGO_OPTIONS = {
 
 const MONGO_USERNAME = process.env.MONGO_USERNAME || 'paralelo';
 const MONGO_PASSWORD = process.env.MONGO_USERNAME || 'COOFR2a3OBnh32Om';
-const MONGO_HOST = process.env.MONGO_URL || 'dp-project.2tacv.mongodb.net/userDatabase';
+const MONGO_HOST = process.env.MONGO_URL || 'dp-project.2tacv.mongodb.net/gameDatabase';
 
 const MONGO = {
     host: MONGO_HOST,
     password: MONGO_PASSWORD,
     username: MONGO_USERNAME,
     options: MONGO_OPTIONS,
-    url: `mongodb+srv://paralelo:COOFR2a3OBnh32Om@dp-project.2tacv.mongodb.net/userDatabase?retryWrites=true&w=majority`
+    url: `mongodb+srv://paralelo:COOFR2a3OBnh32Om@dp-project.2tacv.mongodb.net/gameDatabase?retryWrites=true&w=majority`
 };
 
 const SERVER_HOSTNAME = process.env.SERVER_HOSTNAME || 'localhost';
