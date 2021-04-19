@@ -1,2 +1,2 @@
-# User Service
-User API for DP Game Project
+# Game Service
+Game API for DP Game Project
