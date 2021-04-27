@@ -1,31 +1,38 @@
 {
-  "name": "game-service",
-  "version": "1.0.0",
-  "description": "",
-  "main": "src/server.ts",
+  "name": "phaser3-project-template",
+  "version": "1.1.2",
+  "description": "A Phaser 3 Project Template",
+  "main": "src/index.js",
   "scripts": {
-    "build": "rm -rf build/ && prettier --write source/ && tsc"
+    "build": "webpack --config webpack/prod.js ",
+    "start": "webpack-dev-server --config webpack/base.js --open"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/PaRAleLo2021/game-service.git"
+    "url": "git+https://github.com/photonstorm/phaser3-project-template.git"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Richard Davey <rdavey@gmail.com> (http://www.photonstorm.com)",
+  "license": "MIT",
+  "licenseUrl": "http://www.opensource.org/licenses/mit-license.php",
   "bugs": {
-    "url": "https://github.com/PaRAleLo2021/game-service/issues"
+    "url": "https://github.com/photonstorm/phaser3-project-template/issues"
   },
-  "homepage": "https://github.com/PaRAleLo2021/game-service#readme",
-  "dependencies": {
-    "body-parser": "^1.19.0",
-    "dotenv": "^8.2.0",
-    "express": "^4.17.1",
-    "mongoose": "^5.12.5"
-  },
+  "homepage": "https://github.com/photonstorm/phaser3-project-template#readme",
   "devDependencies": {
-    "@types/body-parser": "^1.19.0",
-    "@types/dotenv": "^8.2.0",
-    "@types/express": "^4.17.11",
-    "@types/mongoose": "^5.10.5"
+    "@babel/core": "^7.13.16",
+    "@babel/preset-env": "^7.13.15",
+    "babel-loader": "^8.2.2",
+    "clean-webpack-plugin": "^3.0.0",
+    "file-loader": "^4.3.0",
+    "html-webpack-plugin": "^3.2.0",
+    "raw-loader": "^3.1.0",
+    "terser-webpack-plugin": "^2.3.8",
+    "webpack": "^4.46.0",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.2",
+    "webpack-merge": "^4.2.2"
+  },
+  "dependencies": {
+    "phaser": "^3.54.0"
   }
 }
