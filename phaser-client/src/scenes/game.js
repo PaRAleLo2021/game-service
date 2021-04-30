@@ -51,7 +51,7 @@ export default class Game extends Phaser.Scene {
 
     create() {
 
-        this.socket = io('http://localhost:3000');
+        this.socket = io('http://localhost:3000', {transports : ["websocket"] })
 
         this.socket.on('connect', function () {
         	console.log('Connected!');
