@@ -65,7 +65,7 @@ export default class Game extends Phaser.Scene {
         this.socket = io('http://localhost:3000', {transports : ["websocket"] })
 
         this.socket.on('connect', function () {
-        	console.log('Connected!');
+        	console.log('Connected! I am ' + this.id);
         });
 
         this.socket.on('isPlayerA', function () {
@@ -83,11 +83,11 @@ export default class Game extends Phaser.Scene {
                 self.opponentCards.shift().destroy();
                 self.dropZone.data.values.cards++;
                 let card = new Card(self);
-                card.render(((self.dropZone.x - 350) + (self.dropZone.data.values.cards * 50)), (self.dropZone.y), sprite).disableInteractive();
+                card.render(((self.dropZone.x - 350) + (self.dropZone.data.values.cards * 50)), (self.dropZone.y), sprite, true).disableInteractive();
             }
         })
 
-        this.dealText = this.add.text(75, 350, ['SHOW CARDS']).setFontSize(30).setFontFamily('Trebuchet MS').setColor('#413b45').setInteractive();
+        this.dealText = this.add.text(75, 350, ['SHOW CARDS']).setFontSize(20).setFontFamily('Trebuchet MS').setColor('#413b45').setInteractive();
 
 		this.dealText.on('pointerdown', function () {
             self.socket.emit("dealCards");
