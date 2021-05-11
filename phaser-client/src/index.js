@@ -2,12 +2,14 @@ import Phaser from "phaser";
 import Game from "./scenes/game";
 
 const config = {
-    type: Phaser.CANVAS, //type: Phaser.AUTO,
-    parent: "phaser-example",
-    autoCenter: Phaser.Scale.CENTER_BOTH,
-    width: 1280, //window.innerWidth * window.devicePixelRatio,
-    height: 780, //window.innerHeight * window.devicePixelRatio,
-    transparent: true,
+    backgroundColor: '#f3cca3',
+    scale: {
+        parent: 'phaser-example',
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+        width: 700,
+        height: 400
+    },
     scene: [
         Game
     ]
