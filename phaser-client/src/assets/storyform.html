@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Story Form</title>
+    <style>
+      html, body {
+      min-height: 100%;
+      }
+      body, div, form, input, select, textarea, label { 
+      padding: 0;
+      margin: 0;
+      outline: none;
+      font-family: Roboto, Arial, sans-serif;
+      font-size: 14px;
+      color: #666;
+      line-height: 22px;
+      }
+      h1 {
+      position: absolute;
+      margin: 0;
+      font-size: 40px;
+      color: #fff;
+      z-index: 2;
+      line-height: 83px;
+      }
+      .storybox {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: inherit;
+      padding: 20px;
+      }
+      form {
+      width: 100%;
+      padding: 20px;
+      border-radius: 6px;
+      background: #fff;
+      box-shadow: 0 0 8px  #ff9138; 
+      }
+      input {
+      width: calc(100% - 10px);
+      padding: 5px;
+      }
+      .item:hover p, .item:hover i, .question:hover p, .question label:hover, input:hover::placeholder {
+      color: #ff9138;
+      }
+      .item input:hover, .item select:hover, .item textarea:hover {
+      border: 1px solid transparent;
+      box-shadow: 0 0 3px 0 #ff9138;
+      color: #ff9138;
+      }
+      .item {
+      position: relative;
+      margin: 10px 0;
+      }
+      .item span {
+      color: red;
+      }     
+    </style>
+  </head>
+  <body>   
+    <div class="storybox">
+      <form action="/">
+        <div class="item">
+          <input id="story" placeholder="Enter a story:" type="text" name="story" required/>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>

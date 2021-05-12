@@ -21,7 +21,10 @@ export default class Game extends Phaser.Scene {
         /**   Chat   **/
         this.load.html("form", "src/assets/form.html");
 
-        /**   Game   **/
+        /**  Story form   **/
+        this.load.html("storyform", "src/assets/storyform.html");
+
+        /**   Cards   **/
         this.load.image('card_0', 'src/assets/card-0.png');
         this.load.image('card_1', 'src/assets/card-1.png');
         this.load.image('card_2', 'src/assets/card-2.png');
@@ -137,6 +140,28 @@ export default class Game extends Phaser.Scene {
             gameObject.y = dropZone.y;
             gameObject.disableInteractive();
             self.socket.emit('cardPlayed', gameObject, self.isPlayerA);
+        })
+
+        /**   Story entry    **/
+
+        this.storyInput = this.add.dom(200, 690).createFromCache("storyform").setOrigin(0.5);
+        this.story = this.add.text(1000, 10, "", { 
+            lineSpacing: 15, 
+            backgroundColor: "#21313CDD", 
+            color: "#26924F", 
+            padding: 10, 
+            fontStyle: "bold" 
+        });
+
+        this.story.setFixedSize(270, 645);
+        this.enterStoryKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+
+        this.enterStoryKey.on("down", event => {
+            let storybox = this.storyInput.getChildByName("story");
+            if (storybox.value != "") {
+                console.log('My story: ' + storybox.value);
+                this.storyInput.setVisible(false);
+            }
         })
 
         /**   Chat   **/
