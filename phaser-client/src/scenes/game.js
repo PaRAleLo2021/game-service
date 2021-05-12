@@ -163,14 +163,10 @@ export default class Game extends Phaser.Scene {
 
         this.socket_chat.connect();
         
-        console.log("Here is the error");
-
         this.socket_chat.on("connect", async () => {
             this.socket_chat.emit("join", "mongodb");
         });
         
-        console.log("Here is the error");
-
         this.socket_chat.on("joined", async (gameId) => {
             let result = await fetch("http://localhost:4000/chats?room=" + gameId)
                 .then(response => response.json());
