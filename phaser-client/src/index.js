@@ -10,6 +10,9 @@ const config = {
         width: 1400,
         height: 800
     },
+    dom: {
+        createContainer: true
+    },
     scene: [
         Game
     ]

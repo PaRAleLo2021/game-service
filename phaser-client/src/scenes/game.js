@@ -10,7 +10,18 @@ export default class Game extends Phaser.Scene {
         });
     }
 
+    init(){
+        /**   Chat   **/
+        this.socket_chat = io("http://localhost:4000", { 
+            autoConnect: false });
+        this.chatMessages = [];
+    }
+
     preload() {
+        /**   Chat   **/
+        this.load.html("form", "src/assets/form.html");
+
+        /**   Game   **/
         this.load.image('card_0', 'src/assets/card-0.png');
         this.load.image('card_1', 'src/assets/card-1.png');
         this.load.image('card_2', 'src/assets/card-2.png');
@@ -51,6 +62,7 @@ export default class Game extends Phaser.Scene {
     }
 
     create() {
+        /**   Game   **/
         this.isPlayerA = false;
         this.opponentCards = [];
 
@@ -126,8 +138,57 @@ export default class Game extends Phaser.Scene {
             gameObject.disableInteractive();
             self.socket.emit('cardPlayed', gameObject, self.isPlayerA);
         })
-    }
-    
-    update() {
+
+        /**   Chat   **/
+        this.textInput = this.add.dom(1135, 690).createFromCache("form").setOrigin(0.5);
+        this.chat = this.add.text(1000, 10, "", { 
+            lineSpacing: 15, 
+            backgroundColor: "#21313CDD", 
+            color: "#26924F", 
+            padding: 10, 
+            fontStyle: "bold" 
+        });
+
+        this.chat.setFixedSize(270, 645);
+
+        this.enterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+
+        this.enterKey.on("down", event => {
+            let chatbox = this.textInput.getChildByName("chat");
+            if (chatbox.value != "") {
+                this.socket_chat.emit("message", chatbox.value);
+                chatbox.value = "";
+            }
+        })
+
+        this.socket_chat.connect();
+        
+        console.log("Here is the error");
+
+        this.socket_chat.on("connect", async () => {
+            this.socket_chat.emit("join", "mongodb");
+        });
+        
+        console.log("Here is the error");
+
+        this.socket_chat.on("joined", async (gameId) => {
+            let result = await fetch("http://localhost:4000/chats?room=" + gameId)
+                .then(response => response.json());
+            this.chatMessages = result.messages;
+            this.chatMessages.push("Welcome to " + gameId);
+            if (this.chatMessages.length > 20) {
+                this.chatMessages.shift();
+            }
+            this.chat.setText(this.chatMessages);
+        });
+
+        this.socket_chat.on("message", (message) => {
+            this.chatMessages.push(message);
+            if(this.chatMessages.length > 20) {
+                this.chatMessages.shift();
+            }
+            this.chat.setText(this.chatMessages);
+        });
+
     }
 }
