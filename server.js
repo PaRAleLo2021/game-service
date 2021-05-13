@@ -1,3 +1,5 @@
+const { SSL_OP_EPHEMERAL_RSA } = require('constants');
+
 const server = require('express')();
 const http = require('http').createServer(server);
 const io = require('socket.io')(http);
@@ -25,14 +27,14 @@ io.on('connection', function (socket) {
         io.emit('isPlayerA');
     };
 
-    socket.on('dealCards', function () {
-        console.log("Emit array: " + cardNumbers.length);
-        io.to(socket.id).emit('dealCards', cardNumbers);
-    });
-
-    socket.on('updateCardNumbers', function (newCardNumbers) {
-        cardNumbers = newCardNumbers;
-        console.log('New array: ' + cardNumbers.length);
+    socket.on('dealCards', function (cardsToGiveOut) {
+        for (let i = 0; i < players.length; i++) {
+            console.log("Emit array: " + cardNumbers.length);
+            io.to(players[i]).emit('dealCards', cardNumbers);
+            for (let j = 0; j < cardsToGiveOut; j++) {
+                cardNumbers.pop();
+            }
+        }
     });
 
     socket.on('cardPlayed', function (gameObject, isPlayerA) {

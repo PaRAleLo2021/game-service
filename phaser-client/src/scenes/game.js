@@ -85,13 +85,12 @@ export default class Game extends Phaser.Scene {
 
         this.socket.on('isPlayerA', function () {
         	self.isPlayerA = true;
+            console.log('I am first player (playerA)');
         })
 
         this.socket.on('dealCards', function (cardNumbers) {
             cardNumbers = self.dealer.dealCards(cardNumbers);
             self.dealText.disableInteractive();
-            self.socket.emit('updateCardNumbers', cardNumbers);
-            console.log('Sent cardNumbers to server: ' + cardNumbers.length);
         })
 
         this.socket.on('cardPlayed', function (gameObject, isPlayerA) {
@@ -107,7 +106,8 @@ export default class Game extends Phaser.Scene {
         this.dealText = this.add.text(75, 350, ['SHOW CARDS']).setFontSize(20).setFontFamily('Trebuchet MS').setColor('#413b45').setInteractive();
 
 		this.dealText.on('pointerdown', function () {
-            self.socket.emit("dealCards");
+            if(self.isPlayerA === true)
+                self.socket.emit("dealCards", 6);
         })
 
         this.dealText.on('pointerover', function () {
