@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import Game from "./scenes/game";
+import StartGame from "./scenes/startGame";
 
 const config = {
     backgroundColor: '#f3cca3',
@@ -14,6 +15,7 @@ const config = {
         createContainer: true
     },
     scene: [
+        StartGame,
         Game
     ]
 };
