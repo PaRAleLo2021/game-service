@@ -87,9 +87,11 @@ export default class Game extends Phaser.Scene {
         	self.isPlayerA = true;
         })
 
-        this.socket.on('dealCards', function () {
-            self.dealer.dealCards();
+        this.socket.on('dealCards', function (cardNumbers) {
+            cardNumbers = self.dealer.dealCards(cardNumbers);
             self.dealText.disableInteractive();
+            self.socket.emit('updateCardNumbers', cardNumbers);
+            console.log('Sent cardNumbers to server: ' + cardNumbers.length);
         })
 
         this.socket.on('cardPlayed', function (gameObject, isPlayerA) {
