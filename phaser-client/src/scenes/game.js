@@ -147,15 +147,7 @@ export default class Game extends Phaser.Scene {
         /**   Story entry    **/
 
         this.storyInput = this.add.dom(200, 690).createFromCache("storyform").setOrigin(0.5);
-        this.story = this.add.text(1000, 10, "", { 
-            lineSpacing: 15, 
-            backgroundColor: "#21313CDD", 
-            color: "#26924F", 
-            padding: 10, 
-            fontStyle: "bold" 
-        });
-
-        this.story.setFixedSize(270, 645);
+        
         this.enterStoryKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
         this.enterStoryKey.on("down", event => {
@@ -163,6 +155,7 @@ export default class Game extends Phaser.Scene {
             if (storybox.value != "") {
                 console.log('My story: ' + storybox.value);
                 this.storyInput.setVisible(false);
+                storybox.value = "";
             }
         })
 
@@ -184,6 +177,7 @@ export default class Game extends Phaser.Scene {
             let chatbox = this.textInput.getChildByName("chat");
             if (chatbox.value != "") {
                 this.socket_chat.emit("message", chatbox.value);
+                console.log("Message: " + chatbox.value);
                 chatbox.value = "";
             }
         })
