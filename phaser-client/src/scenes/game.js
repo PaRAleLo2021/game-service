@@ -24,6 +24,8 @@ export default class Game extends Phaser.Scene {
         /**  Story form   **/
         this.load.html("storyform", "src/assets/storyform.html");
 
+        this.load.image('button','src/assets/button-start-game.png');
+
         /**   Cards   **/
         this.load.image('card_0', 'src/assets/card-0.png');
         this.load.image('card_1', 'src/assets/card-1.png');
@@ -69,9 +71,12 @@ export default class Game extends Phaser.Scene {
         this.isPlayerA = false;
         this.opponentCards = [];
 
+        this.add.text(295, 200, ['Choose a card and write your story!']).setFontSize(24).setFontFamily('Trebuchet MS').setColor('#413b45');
+
         this.zone = new Zone(this);
         this.dropZone = this.zone.renderZone();
         this.outline = this.zone.renderOutline(this.dropZone);
+        this.add.text(275, 400, ['Drop card here!']).setFontSize(24).setFontFamily('Trebuchet MS').setColor('#413b45');
 
         this.dealer = new Dealer(this);
 
@@ -87,10 +92,10 @@ export default class Game extends Phaser.Scene {
         	self.isPlayerA = true;
             console.log('I am first player (playerA)');
         })
-
+        
         this.socket.on('dealCards', function (cardNumbers) {
             cardNumbers = self.dealer.dealCards(cardNumbers);
-            self.dealText.disableInteractive();
+            //self.dealText.disableInteractive();
         })
 
         this.socket.on('cardPlayed', function (gameObject, isPlayerA) {
@@ -103,20 +108,20 @@ export default class Game extends Phaser.Scene {
             }
         })
 
-        this.dealText = this.add.text(75, 350, ['SHOW CARDS']).setFontSize(20).setFontFamily('Trebuchet MS').setColor('#413b45').setInteractive();
+        //this.dealText = this.add.text(75, 350, ['SHOW CARDS']).setFontSize(20).setFontFamily('Trebuchet MS').setColor('#413b45').setInteractive();
 
-		this.dealText.on('pointerdown', function () {
-            if(self.isPlayerA === true)
+		//this.dealText.on('pointerdown', function () {
+          //  if(self.isPlayerA === true)
                 self.socket.emit("dealCards", 6);
-        })
-
+        //})
+        /*
         this.dealText.on('pointerover', function () {
             self.dealText.setColor('#000000');
         })
 
         this.dealText.on('pointerout', function () {
             self.dealText.setColor('#413b45');
-        })
+        })*/
 
         this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
             gameObject.x = dragX;
@@ -125,6 +130,7 @@ export default class Game extends Phaser.Scene {
 
         this.input.on('dragstart', function (pointer, gameObject) {
             gameObject.setTint(0xff69b4);
+            //this.bringToTop(gameObject);
             self.children.bringToTop(gameObject);
         })
 
@@ -138,30 +144,34 @@ export default class Game extends Phaser.Scene {
 
         this.input.on('drop', function (pointer, gameObject, dropZone) {
             dropZone.data.values.cards++;
-            gameObject.x = (dropZone.x - 350) + (dropZone.data.values.cards * 50);
+            gameObject.x = dropZone.x;
             gameObject.y = dropZone.y;
-            gameObject.disableInteractive();
+            //gameObject.disableInteractive();
             self.socket.emit('cardPlayed', gameObject, self.isPlayerA);
         })
 
         /**   Story entry    **/
 
-        this.storyInput = this.add.dom(200, 690).createFromCache("storyform").setOrigin(0.5);
-        
+        this.errorMissingStory = this.add.text(360, 180, ['Please write a story!']).setFontSize(24).setFontFamily('Trebuchet MS').setColor('#413b45').setVisible(false);
+        this.storyInput = this.add.dom(650, 300).createFromCache("storyform").setOrigin(0.5);
         this.enterStoryKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
-        this.enterStoryKey.on("down", event => {
+        const buttonSubmitStory = this.add.image(650,405, "button").setScale(0.5,0.5);
+        buttonSubmitStory.setInteractive();
+        buttonSubmitStory.on('pointerdown', () => {
             let storybox = this.storyInput.getChildByName("story");
             if (storybox.value != "") {
                 console.log('My story: ' + storybox.value);
-                this.storyInput.setVisible(false);
                 storybox.value = "";
             }
-        })
+            else{
+                this.errorMissingStory.setVisible(true);
+            }
+        });
 
         /**   Chat   **/
-        this.textInput = this.add.dom(1135, 690).createFromCache("form").setOrigin(0.5);
-        this.chat = this.add.text(1000, 10, "", { 
+        this.textInput = this.add.dom(1195, 752).createFromCache("form").setOrigin(0.5).setDepth(0);
+        this.chat = this.add.text(1060, 30, "", { 
             lineSpacing: 15, 
             backgroundColor: "#21313CDD", 
             color: "#26924F", 
