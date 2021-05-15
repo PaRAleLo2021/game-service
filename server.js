@@ -41,6 +41,15 @@ io.on('connection', function (socket) {
         io.emit('cardPlayed', gameObject, isPlayerA);
     });
 
+    socket.on('startGame', function(id) {
+        console.log('Game is starting...');
+        for (let i = 0; i < players.length; i++) {
+            if (players[i] !== id) {
+                io.to(players[i]).emit('startGame');
+            }
+        }
+    });
+
     socket.on('disconnect', function () {
         console.log('A user disconnected: ' + socket.id);
         players = players.filter(player => player !== socket.id);

@@ -1,12 +1,10 @@
 import io from 'socket.io-client';
-import Card from '../helpers/card';
 import Dealer from "../helpers/dealer";
-import Zone from '../helpers/zone';
 
-export default class Game extends Phaser.Scene {
+export default class waitForStory extends Phaser.Scene {
     constructor() {
         super({
-            key: 'Game'
+            key: 'waitForStory'
         });
     }
 
@@ -24,9 +22,6 @@ export default class Game extends Phaser.Scene {
     preload() {
         /**   Chat   **/
         this.load.html("form", "src/assets/form.html");
-
-        /**  Story form   **/
-        this.load.html("storyform", "src/assets/storyform.html");
 
         /**   Cards   **/
         this.load.image('card_0', 'src/assets/card-0.png');
@@ -70,49 +65,18 @@ export default class Game extends Phaser.Scene {
 
     create() {
         /**   Game   **/
-        this.isPlayerA = false;
-        this.opponentCards = [];
-
-        this.zone = new Zone(this);
-        this.dropZone = this.zone.renderZone();
-        this.outline = this.zone.renderOutline(this.dropZone);
-
         this.dealer = new Dealer(this);
 
         let self = this;
 
-        this.socket.on('isPlayerA', function () {
-        	self.isPlayerA = true;
-            console.log('I am first player (playerA)');
-        })
-
-        this.socket.on('dealCards', function (cardNumbers) {
-            cardNumbers = self.dealer.dealCards(cardNumbers);
-            self.dealText.disableInteractive();
-        })
-
-        this.socket.on('cardPlayed', function (gameObject, isPlayerA) {
-            if (isPlayerA !== self.isPlayerA) {
-                let sprite = gameObject.textureKey;
-                self.opponentCards.shift().destroy();
-                self.dropZone.data.values.cards++;
-                let card = new Card(self);
-                card.render(((self.dropZone.x - 350) + (self.dropZone.data.values.cards * 50)), (self.dropZone.y), sprite, true).disableInteractive();
-            }
-        })
-
-        this.dealText = this.add.text(75, 350, ['SHOW CARDS']).setFontSize(20).setFontFamily('Trebuchet MS').setColor('#413b45').setInteractive();
-
-		this.dealText.on('pointerdown', function () {
-            self.socket.emit("dealCards", 6);
-        })
+        this.dealText = this.add.text(75, 350, ['Wait for storyteller...']).setFontSize(20).setFontFamily('Trebuchet MS').setColor('#413b45').setInteractive();
 
         this.dealText.on('pointerover', function () {
             self.dealText.setColor('#000000');
         })
 
-        this.dealText.on('pointerout', function () {
-            self.dealText.setColor('#413b45');
+        this.socket.on('dealCards', function (cardNumbers) {
+            cardNumbers = self.dealer.dealCards(cardNumbers);
         })
 
         this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
@@ -125,35 +89,10 @@ export default class Game extends Phaser.Scene {
             self.children.bringToTop(gameObject);
         })
 
-        this.input.on('dragend', function (pointer, gameObject, dropped) {
+        this.input.on('dragend', function (pointer, gameObject) {
             gameObject.setTint();
-            if (!dropped) {
                 gameObject.x = gameObject.input.dragStartX;
                 gameObject.y = gameObject.input.dragStartY;
-            }
-        })
-
-        this.input.on('drop', function (pointer, gameObject, dropZone) {
-            dropZone.data.values.cards++;
-            gameObject.x = (dropZone.x - 350) + (dropZone.data.values.cards * 50);
-            gameObject.y = dropZone.y;
-            gameObject.disableInteractive();
-            self.socket.emit('cardPlayed', gameObject, self.isPlayerA);
-        })
-
-        /**   Story entry    **/
-
-        this.storyInput = this.add.dom(200, 690).createFromCache("storyform").setOrigin(0.5);
-        
-        this.enterStoryKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
-
-        this.enterStoryKey.on("down", event => {
-            let storybox = this.storyInput.getChildByName("story");
-            if (storybox.value != "") {
-                console.log('My story: ' + storybox.value);
-                this.storyInput.setVisible(false);
-                storybox.value = "";
-            }
         })
 
         /**   Chat   **/
