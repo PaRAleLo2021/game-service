@@ -117,7 +117,7 @@ export default class Game extends Phaser.Scene {
                 this.errorMissingCardAndStory.setVisible(true);
             }
             else{
-                console.log('My card: ' + cardNumber);
+                console.log('My card: ' + cardNumber.texture.key);
                 console.log('My story: ' + storybox.value);
                 storybox.value = "";
 

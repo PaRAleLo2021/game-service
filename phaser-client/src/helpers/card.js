@@ -1,8 +1,7 @@
 export default class Card {
-    constructor(scene, number) {
+    constructor(scene) {
         this.render = (x, y, sprite, current) => {
             let card = scene.add.image(x, y, sprite).setInteractive().setDataEnabled();
-            let number = number;
             if (current)
                 card.setScale(1.3, 1.3);
             else
