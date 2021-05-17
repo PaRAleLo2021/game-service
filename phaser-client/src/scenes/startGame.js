@@ -20,6 +20,7 @@ export default class StartGame extends Phaser.Scene {
         let self = this;
         let id;
         let cardNumbers = [];
+        let buttonStartGame = buttonStartGame = this.add.image(300,600, "button").setScale(0.5,0.5).setVisible(false);
 
         this.socket = io('http://localhost:3000', {transports : ["websocket"] });
 
@@ -32,11 +33,18 @@ export default class StartGame extends Phaser.Scene {
         	self.isPlayerA = true;
             console.log('I am first player (playerA)');
             buttonStartGame.setInteractive();
+            buttonStartGame.setVisible(true);
         })
 
-        this.dealText = this.add.text(75, 350, ['Please wait for the game creator to start the game']).setFontSize(20).setFontFamily('Trebuchet MS').setColor('#413b45');
-        
-        const buttonStartGame = this.add.image(300,600, "button").setScale(0.5,0.5);
+        var style = { 
+            fontSize: 40,
+            fontFamily: 'Arial',
+            align: "left",
+            color: '#413b45',
+            wordWrap: { width: 450, useAdvancedWrap: true }
+        };
+
+        this.add.text(175, 350, 'Please wait for the game creator to start the game.', style);
         
         buttonStartGame.on('pointerdown', () => {
             console.log('pointerover');
@@ -55,6 +63,7 @@ export default class StartGame extends Phaser.Scene {
                 self.scene.start("WriteStory", { server: self.socket, id: id, cardNumbers: cardNumbers});
             }
         })
+
     }
 
     update() {
