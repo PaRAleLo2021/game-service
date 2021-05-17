@@ -1,10 +1,10 @@
 import io from 'socket.io-client';
 import Dealer from "../helpers/dealer";
 
-export default class Game extends Phaser.Scene {
+export default class WriteStory extends Phaser.Scene {
     constructor() {
         super({
-            key: 'Game'
+            key: 'WriteStory'
         });
     }
 

@@ -52,7 +52,7 @@ export default class StartGame extends Phaser.Scene {
             cardNumbers = c;
             if (self.isPlayerA === true) {
                 self.socket.emit("startGame", id);
-                self.scene.start("Game", { server: self.socket, id: id, cardNumbers: cardNumbers});
+                self.scene.start("WriteStory", { server: self.socket, id: id, cardNumbers: cardNumbers});
             }
         })
     }
