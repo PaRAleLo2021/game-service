@@ -4,7 +4,7 @@ import Card from './card';
 export default class Dealer {
     constructor(scene) {
         this.dealCards = (cardNumbers) => {
-            console.log("Received cardNumbers: " + cardNumbers.length);
+            console.log("Printed cardNumbers - " + cardNumbers.length + " : " + cardNumbers);
             for (let j = 0; j < 2; j++)
             for (let i = 0; i < 3; i++) {
                 let number = cardNumbers.pop();

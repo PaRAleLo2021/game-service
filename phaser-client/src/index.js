@@ -2,6 +2,8 @@ import Phaser from "phaser";
 import Game from "./scenes/game";
 import StartGame from "./scenes/startGame";
 import waitForStory from "./scenes/waitForStory";
+import chooseCard from "./scenes/chooseCard";
+import waitForCards from "./scenes/waitForCards";
 
 const config = {
     backgroundColor: '#f3cca3',
@@ -18,7 +20,9 @@ const config = {
     scene: [
         StartGame,
         Game,
-        waitForStory
+        waitForStory,
+        chooseCard, 
+        waitForCards
     ]
 };
 

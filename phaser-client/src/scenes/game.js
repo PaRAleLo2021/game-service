@@ -72,6 +72,10 @@ export default class Game extends Phaser.Scene {
     create() {
         /**   Game   **/
         this.isPlayerA = false;
+        let cards = this.cardNumbers.slice(0);
+        this.dealer = new Dealer(this);
+        self.dealer.dealCards(this.cardNumbers);
+
         let self = this;
         let selectedCard = null;
         
@@ -91,9 +95,6 @@ export default class Game extends Phaser.Scene {
         };
         this.text = this.add.text(750, 300, "Choose a card and write your story!", style);
 
-        this.dealer = new Dealer(this);
-        self.dealer.dealCards(this.cardNumbers);
-
         this.input.on('gameobjectdown', function (pointer, gameObject) {
             if(selectedCard != null)
                 selectedCard.setTint();
@@ -112,16 +113,24 @@ export default class Game extends Phaser.Scene {
         buttonSubmitStory.setInteractive();
         buttonSubmitStory.on('pointerdown', () => {
             let storybox = this.storyInput.getChildByName("story");
+
             let cardNumber = selectedCard;
             if (storybox.value == "" || selectedCard == null) {
                 this.errorMissingCardAndStory.setVisible(true);
             }
-            else{
+
+            else {
+                console.log('My story: ' + storybox.value);
+                self.socket.emit("submitStory", storybox.value, self.id);
+                self.scene.start("waitForCards", { server: self.socket, id: self.id, cardNumbers: cards, story: storybox.value});
+                storybox.value = "";
+            }
+            /*else{
                 console.log('My card: ' + cardNumber.texture.key);
                 console.log('My story: ' + storybox.value);
                 storybox.value = "";
 
-            }
+            }*/
         });
 
         /**   Chat   **/
