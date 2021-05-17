@@ -11,7 +11,7 @@ export default class Dealer {
 
             for (let i = 0; i < 6; i++) {
                 let playerCard = new Card(scene);
-                playerCard.render(350 + (i * 175), 650, 'card_' + cardNumbers.pop(), true);
+                playerCard.render(100 + (i * 165), 650, 'card_' + cardNumbers.pop(), true);
 
                 /*for (let j = 0; j < NO_OF_PLAYERS-1; j++){
                     let opponentCard = new Card(scene);
