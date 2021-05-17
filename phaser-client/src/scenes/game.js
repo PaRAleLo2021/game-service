@@ -72,33 +72,55 @@ export default class Game extends Phaser.Scene {
     create() {
         /**   Game   **/
         this.isPlayerA = false;
-
-        this.add.text(295, 200, ['Choose a card and write your story!']).setFontSize(24).setFontFamily('Trebuchet MS').setColor('#413b45');
-        this.add.text(275, 400, ['Drop card here!']).setFontSize(24).setFontFamily('Trebuchet MS').setColor('#413b45');
+        let self = this;
+        let selectedCard = null;
+        
+        var style = { 
+            fontSize: 34,
+            fontFamily: 'Arial',
+            align: "left",
+            color: '#413b45',
+            wordWrap: { width: 250, useAdvancedWrap: true }
+        };
+        var styleWarning = { 
+            fontSize: 24,
+            fontFamily: 'Arial',
+            align: "left",
+            color: 'red',
+            wordWrap: { width: 250, useAdvancedWrap: true }
+        };
+        this.text = this.add.text(750, 300, "Choose a card and write your story!", style);
 
         this.dealer = new Dealer(this);
-        
-
-        let self = this;
-        
         self.dealer.dealCards(this.cardNumbers);
 
-        /**   Story entry    **/
+        this.input.on('gameobjectdown', function (pointer, gameObject) {
+            if(selectedCard != null)
+                selectedCard.setTint();
+            selectedCard = gameObject;
+            gameObject.setTint(0x3f51b5);
+        })
 
-        this.errorMissingStory = this.add.text(360, 180, ['Please write a story!']).setFontSize(24).setFontFamily('Trebuchet MS').setColor('#413b45').setVisible(false);
-        this.storyInput = this.add.dom(650, 300).createFromCache("storyform").setOrigin(0.5);
+        /**   Story entry    **/
+        this.errorMissingStory = this.add.text(750, 200, 'Please write a story!', styleWarning).setVisible(false);
+        this.errorMissingCard = this.add.text(750, 200, 'Please choose a card!', styleWarning).setVisible(false);
+        this.errorMissingCardAndStory = this.add.text(750, 200, 'Please choose a Card and write a Story!', styleWarning).setVisible(false);
+        this.storyInput = this.add.dom(850, 500).createFromCache("storyform").setOrigin(0.5);
         this.enterStoryKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
-        const buttonSubmitStory = this.add.image(650,405, "button").setScale(0.5,0.5);
+        const buttonSubmitStory = this.add.image(850,605, "button").setScale(0.5,0.5);
         buttonSubmitStory.setInteractive();
         buttonSubmitStory.on('pointerdown', () => {
             let storybox = this.storyInput.getChildByName("story");
-            if (storybox.value != "") {
-                console.log('My story: ' + storybox.value);
-                storybox.value = "";
+            let cardNumber = selectedCard;
+            if (storybox.value == "" || selectedCard == null) {
+                this.errorMissingCardAndStory.setVisible(true);
             }
             else{
-                this.errorMissingStory.setVisible(true);
+                console.log('My card: ' + cardNumber);
+                console.log('My story: ' + storybox.value);
+                storybox.value = "";
+
             }
         });
 
@@ -106,10 +128,11 @@ export default class Game extends Phaser.Scene {
         this.textInput = this.add.dom(1195, 752).createFromCache("form").setOrigin(0.5).setDepth(0);
         this.chat = this.add.text(1060, 30, "", { 
             lineSpacing: 15, 
-            backgroundColor: "#21313CDD", 
-            color: "#26924F", 
+            backgroundColor: "#3f51b5", 
+            color: "white", 
             padding: 10, 
-            fontStyle: "bold" 
+            fontStyle: "bold",
+            wordWrap: { width: 250, useAdvancedWrap: true }
         });
 
         this.chat.setFixedSize(270, 645);

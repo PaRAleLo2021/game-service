@@ -1,12 +1,12 @@
 export default class Card {
-    constructor(scene) {
+    constructor(scene, number) {
         this.render = (x, y, sprite, current) => {
-            let card = scene.add.image(x, y, sprite).setInteractive();
+            let card = scene.add.image(x, y, sprite).setInteractive().setDataEnabled();
+            let number = number;
             if (current)
-                card.setScale(1, 1);
+                card.setScale(1.3, 1.3);
             else
                 card.setScale(0.5, 0.5);
-            scene.input.setDraggable(card);
             return card;
         }
     }
