@@ -72,12 +72,12 @@ export default class Game extends Phaser.Scene {
     create() {
         /**   Game   **/
         this.isPlayerA = false;
-        let cards = this.cardNumbers.slice(0);
-        this.dealer = new Dealer(this);
-        self.dealer.dealCards(this.cardNumbers);
-
         let self = this;
+        let cards = this.cardNumbers.slice(0);
+        this.dealer = new Dealer(this);      
         let selectedCard = null;
+
+        self.dealer.dealCards(this.cardNumbers);  
         
         var style = { 
             fontSize: 34,
