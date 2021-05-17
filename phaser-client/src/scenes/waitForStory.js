@@ -17,6 +17,7 @@ export default class waitForStory extends Phaser.Scene {
         /**   Game   **/
         this.socket = data.server;
         this.id = data.id;
+        this.cardNumbers = data.cardNumbers;
     }
 
     preload() {
@@ -75,25 +76,7 @@ export default class waitForStory extends Phaser.Scene {
             self.dealText.setColor('#000000');
         })
 
-        this.socket.on('dealCards', function (cardNumbers) {
-            cardNumbers = self.dealer.dealCards(cardNumbers);
-        })
-
-        this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
-            gameObject.x = dragX;
-            gameObject.y = dragY;
-        })
-
-        this.input.on('dragstart', function (pointer, gameObject) {
-            gameObject.setTint(0xff69b4);
-            self.children.bringToTop(gameObject);
-        })
-
-        this.input.on('dragend', function (pointer, gameObject) {
-            gameObject.setTint();
-                gameObject.x = gameObject.input.dragStartX;
-                gameObject.y = gameObject.input.dragStartY;
-        })
+        self.dealer.dealCards(this.cardNumbers);
 
         /**   Chat   **/
         this.textInput = this.add.dom(1135, 690).createFromCache("form").setOrigin(0.5);

@@ -1,7 +1,4 @@
 import io from 'socket.io-client';
-//import Card from '../helpers/card';
-//import Dealer from "../helpers/dealer";
-//import Zone from '../helpers/zone';
 
 export default class StartGame extends Phaser.Scene {
     constructor() {
@@ -22,6 +19,7 @@ export default class StartGame extends Phaser.Scene {
         this.isPlayerA = false;
         let self = this;
         let id;
+        let cardNumbers = [];
 
         this.socket = io('http://localhost:3000', {transports : ["websocket"] });
 
@@ -42,13 +40,20 @@ export default class StartGame extends Phaser.Scene {
         
         buttonStartGame.on('pointerdown', () => {
             console.log('pointerover');
-            this.socket.emit("startGame", id);
-            self.scene.start("Game", { server: this.socket, id: id});
+            self.socket.emit("dealCards", 6);
         });
 
         this.socket.on('startGame', function () {
             console.log('Game is starting, please be patient!');
-            self.scene.start("waitForStory", { server: self.socket, id: id});
+            self.scene.start("waitForStory", { server: self.socket, id: id, cardNumbers: cardNumbers});
+        })
+
+        this.socket.on('dealCards', function (c) {
+            cardNumbers = c;
+            if (self.isPlayerA === true) {
+                self.socket.emit("startGame", id);
+                self.scene.start("Game", { server: this.socket, id: id, cardNumbers: cardNumbers});
+            }
         })
     }
 

@@ -1,7 +1,5 @@
 import io from 'socket.io-client';
-import Card from '../helpers/card';
 import Dealer from "../helpers/dealer";
-import Zone from '../helpers/zone';
 
 export default class Game extends Phaser.Scene {
     constructor() {
@@ -19,6 +17,7 @@ export default class Game extends Phaser.Scene {
         /**   Game   **/
         this.socket = data.server;
         this.id = data.id;
+        this.cardNumbers = data.cardNumbers;
     }
 
     preload() {
@@ -73,66 +72,16 @@ export default class Game extends Phaser.Scene {
     create() {
         /**   Game   **/
         this.isPlayerA = false;
-        this.opponentCards = [];
 
         this.add.text(295, 200, ['Choose a card and write your story!']).setFontSize(24).setFontFamily('Trebuchet MS').setColor('#413b45');
-
-        this.zone = new Zone(this);
-        this.dropZone = this.zone.renderZone();
-        this.outline = this.zone.renderOutline(this.dropZone);
         this.add.text(275, 400, ['Drop card here!']).setFontSize(24).setFontFamily('Trebuchet MS').setColor('#413b45');
 
         this.dealer = new Dealer(this);
+        
 
         let self = this;
-
-        this.socket.on('isPlayerA', function () {
-        	self.isPlayerA = true;
-            console.log('I am first player (playerA)');
-        })
         
-        this.socket.on('dealCards', function (cardNumbers) {
-            cardNumbers = self.dealer.dealCards(cardNumbers);
-            //self.dealText.disableInteractive();
-        })
-
-        this.socket.on('cardPlayed', function (gameObject, isPlayerA) {
-            if (isPlayerA !== self.isPlayerA) {
-                let sprite = gameObject.textureKey;
-                self.opponentCards.shift().destroy();
-                self.dropZone.data.values.cards++;
-                let card = new Card(self);
-                card.render(((self.dropZone.x - 350) + (self.dropZone.data.values.cards * 50)), (self.dropZone.y), sprite, true).disableInteractive();
-            }
-        })
-
-        self.socket.emit("dealCards", 6);
-
-        this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
-            gameObject.x = dragX;
-            gameObject.y = dragY;
-        })
-
-        this.input.on('dragstart', function (pointer, gameObject) {
-            gameObject.setTint(0xff69b4);
-            self.children.bringToTop(gameObject);
-        })
-
-        this.input.on('dragend', function (pointer, gameObject, dropped) {
-            gameObject.setTint();
-            if (!dropped) {
-                gameObject.x = gameObject.input.dragStartX;
-                gameObject.y = gameObject.input.dragStartY;
-            }
-        })
-
-        this.input.on('drop', function (pointer, gameObject, dropZone) {
-            dropZone.data.values.cards++;
-            gameObject.x = dropZone.x;
-            gameObject.y = dropZone.y;
-            //gameObject.disableInteractive();
-            self.socket.emit('cardPlayed', gameObject, self.isPlayerA);
-        })
+        self.dealer.dealCards(this.cardNumbers);
 
         /**   Story entry    **/
 
