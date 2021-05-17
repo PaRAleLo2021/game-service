@@ -5,10 +5,11 @@ export default class Dealer {
     constructor(scene) {
         this.dealCards = (cardNumbers) => {
             console.log("Printed cardNumbers - " + cardNumbers.length + " : " + cardNumbers);
-
-            for (let i = 0; i < 6; i++) {
+            for (let j = 0; j < 2; j++)
+            for (let i = 0; i < 3; i++) {
+                let number = cardNumbers.pop();
                 let playerCard = new Card(scene);
-                playerCard.render(100 + (i * 165), 650, 'card_' + cardNumbers.pop(), true);
+                playerCard.render(150 + (i * 225), 280 + 340 * j, 'card_' + number, true);
             }
         }
     }
