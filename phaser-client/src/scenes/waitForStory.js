@@ -68,69 +68,32 @@ export default class waitForStory extends Phaser.Scene {
         /**   Game   **/
         this.dealer = new Dealer(this);
         let cards = this.cardNumbers.slice(0);
-
         let self = this;
-
-        this.dealText = this.add.text(75, 350, ['Wait for storyteller...']).setFontSize(20).setFontFamily('Trebuchet MS').setColor('#413b45').setInteractive();
-
-        this.dealText.on('pointerover', function () {
-            self.dealText.setColor('#000000');
-        })
-
         self.dealer.dealCards(this.cardNumbers);
+
+        var style = { 
+            fontSize: 34,
+            fontFamily: 'Arial',
+            align: "left",
+            color: '#413b45',
+            wordWrap: { width: 250, useAdvancedWrap: true }
+        };
+        var styleWarning = { 
+            fontSize: 24,
+            fontFamily: 'Arial',
+            align: "left",
+            color: 'red',
+            wordWrap: { width: 250, useAdvancedWrap: true }
+        };
+
+        this.add.text(750, 300, 'Wait for storyteller...', style);
+
+        
 
         this.socket.on('submittedStory', function (story) {
             console.log("Received story! " + story);
             self.scene.start("chooseCard", { server: self.socket, id: self.id, cardNumbers: cards, story: story});
         })
-
-        /**   Chat   **/
-        this.textInput = this.add.dom(1135, 690).createFromCache("form").setOrigin(0.5);
-        this.chat = this.add.text(1000, 10, "", { 
-            lineSpacing: 15, 
-            backgroundColor: "#21313CDD", 
-            color: "#26924F", 
-            padding: 10, 
-            fontStyle: "bold" 
-        });
-
-        this.chat.setFixedSize(270, 645);
-
-        this.enterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
-
-        this.enterKey.on("down", event => {
-            let chatbox = this.textInput.getChildByName("chat");
-            if (chatbox.value != "") {
-                this.socket_chat.emit("message", chatbox.value);
-                console.log("Message: " + chatbox.value);
-                chatbox.value = "";
-            }
-        })
-
-        this.socket_chat.connect();
-        
-        this.socket_chat.on("connect", async () => {
-            this.socket_chat.emit("join", "mongodb");
-        });
-        
-        this.socket_chat.on("joined", async (gameId) => {
-            let result = await fetch("http://localhost:4000/chats?room=" + gameId)
-                .then(response => response.json());
-            this.chatMessages = result.messages;
-            this.chatMessages.push("Welcome to " + gameId);
-            if (this.chatMessages.length > 20) {
-                this.chatMessages.shift();
-            }
-            this.chat.setText(this.chatMessages);
-        });
-
-        this.socket_chat.on("message", (message) => {
-            this.chatMessages.push(message);
-            if(this.chatMessages.length > 20) {
-                this.chatMessages.shift();
-            }
-            this.chat.setText(this.chatMessages);
-        });
 
     }
 }

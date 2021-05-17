@@ -17,6 +17,8 @@ export default class chooseCard extends Phaser.Scene {
     }
 
     preload() {
+        this.load.image('button','src/assets/button-start-game.png');
+
         /**   Cards   **/
         this.load.image('card_0', 'src/assets/card-0.png');
         this.load.image('card_1', 'src/assets/card-1.png');
@@ -60,14 +62,50 @@ export default class chooseCard extends Phaser.Scene {
     create() {
         /**   Game   **/
         this.dealer = new Dealer(this);
-
         let self = this;
-
-        this.dealText = this.add.text(75, 350, ['Choose a card that goes best with the story']).setFontSize(20).setFontFamily('Trebuchet MS').setColor('#413b45').setInteractive();
-        this.storyText = this.add.text(75, 400, ['The story: ' + this.story]).setFontSize(30).setFontFamily('Trebuchet MS').setColor('#413b45').setInteractive();
-
-
+        let cards = this.cardNumbers.slice(0);
         self.dealer.dealCards(this.cardNumbers);
+        let selectedCard = null;
+
+        var style = { 
+            fontSize: 34,
+            fontFamily: 'Arial',
+            align: "left",
+            color: '#413b45',
+            wordWrap: { width: 250, useAdvancedWrap: true }
+        };
+        var styleWarning = { 
+            fontSize: 24,
+            fontFamily: 'Arial',
+            align: "left",
+            color: 'red',
+            wordWrap: { width: 250, useAdvancedWrap: true }
+        };
+
+        this.add.text(750, 300, 'Choose a card that goes best with the story', style);
+        this.add.text(750, 420, 'The story: ' + this.story, style).setFontSize(40);
+        this.errorMissingCard = this.add.text(750, 200, 'Please choose a Card!', styleWarning).setVisible(false);
+
+        this.input.on('gameobjectdown', function (pointer, gameObject) {
+            if(selectedCard != null)
+                selectedCard.setTint();
+            selectedCard = gameObject;
+            gameObject.setTint(0x3f51b5);
+        })
+
+        const buttonSubmitStory = this.add.image(850,605, "button").setScale(0.5,0.5);
+        buttonSubmitStory.setInteractive();
+        buttonSubmitStory.on('pointerdown', () => {
+            let cardNumber = selectedCard;
+            if (selectedCard == null) {
+                this.errorMissingCard.setVisible(true);
+            }
+
+            else {
+                console.log('My card: ' + cardNumber.texture.key);
+                self.scene.start("waitForCards", { server: self.socket, id: self.id, cardNumbers: cards, story: ""});
+            }
+        });
 
     }
 }

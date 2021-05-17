@@ -103,8 +103,6 @@ export default class Game extends Phaser.Scene {
         })
 
         /**   Story entry    **/
-        this.errorMissingStory = this.add.text(750, 200, 'Please write a story!', styleWarning).setVisible(false);
-        this.errorMissingCard = this.add.text(750, 200, 'Please choose a card!', styleWarning).setVisible(false);
         this.errorMissingCardAndStory = this.add.text(750, 200, 'Please choose a Card and write a Story!', styleWarning).setVisible(false);
         this.storyInput = this.add.dom(850, 500).createFromCache("storyform").setOrigin(0.5);
         this.enterStoryKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
