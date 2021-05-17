@@ -72,6 +72,7 @@ export default class Game extends Phaser.Scene {
     create() {
         /**   Game   **/
         this.isPlayerA = false;
+        let cards = this.cardNumbers.slice(0);
 
         this.add.text(295, 200, ['Choose a card and write your story!']).setFontSize(24).setFontFamily('Trebuchet MS').setColor('#413b45');
         this.add.text(275, 400, ['Drop card here!']).setFontSize(24).setFontFamily('Trebuchet MS').setColor('#413b45');
@@ -95,6 +96,8 @@ export default class Game extends Phaser.Scene {
             let storybox = this.storyInput.getChildByName("story");
             if (storybox.value != "") {
                 console.log('My story: ' + storybox.value);
+                self.socket.emit("submitStory", storybox.value, self.id);
+                self.scene.start("waitForCards", { server: self.socket, id: self.id, cardNumbers: cards, story: storybox.value});
                 storybox.value = "";
             }
             else{

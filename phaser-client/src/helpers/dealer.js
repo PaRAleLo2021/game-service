@@ -4,7 +4,7 @@ import Card from './card';
 export default class Dealer {
     constructor(scene) {
         this.dealCards = (cardNumbers) => {
-            console.log("Received cardNumbers: " + cardNumbers.length);
+            console.log("Printed cardNumbers - " + cardNumbers.length + " : " + cardNumbers);
 
             for (let i = 0; i < 6; i++) {
                 let playerCard = new Card(scene);

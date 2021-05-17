@@ -4,6 +4,7 @@ const server = require('express')();
 const http = require('http').createServer(server);
 const io = require('socket.io')(http);
 let players = [];
+let cards = [];
 
 //initialize card numbers array
 let cardNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
@@ -29,11 +30,12 @@ io.on('connection', function (socket) {
 
     socket.on('dealCards', function (cardsToGiveOut) {
         for (let i = 0; i < players.length; i++) {
-            console.log("Emit array: " + cardNumbers.length);
-            io.to(players[i]).emit('dealCards', cardNumbers);
             for (let j = 0; j < cardsToGiveOut; j++) {
-                cardNumbers.pop();
+                cards.push(cardNumbers.pop());
             }
+            io.to(players[i]).emit('dealCards', cards);
+            console.log("Sent cards: " + cards.length + ", remained: " + cardNumbers.length);
+            cards = [];
         }
     });
 
@@ -46,6 +48,15 @@ io.on('connection', function (socket) {
         for (let i = 0; i < players.length; i++) {
             if (players[i] !== id) {
                 io.to(players[i]).emit('startGame');
+            }
+        }
+    });
+
+    socket.on('submitStory', function(story, id) {
+        console.log('-> story: ' + story + " from player " + id);
+        for (let i = 0; i < players.length; i++) {
+            if (players[i] !== id) {
+                io.to(players[i]).emit('submittedStory', story);
             }
         }
     });
