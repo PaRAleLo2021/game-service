@@ -87,10 +87,21 @@ export default class chooseCard extends Phaser.Scene {
         this.errorMissingCard = this.add.text(750, 200, 'Please choose a Card!', styleWarning).setVisible(false);
 
         this.input.on('gameobjectdown', function (pointer, gameObject) {
-            if(selectedCard != null)
-                selectedCard.setTint();
+            if(selectedCard != null){
+                selectedCard.setTint(0x3f51b5);
+                selectedCard.setScale(1.3, 1.3);
+            }
             selectedCard = gameObject;
-            gameObject.setTint(0x3f51b5);
+            self.children.bringToTop(gameObject);
+            gameObject.setTint();
+        })
+
+        this.input.on('gameobjectover', function (pointer, gameObject) {
+            gameObject.setScale(1.8, 1.8);
+        })
+
+        this.input.on('gameobjectout', function (pointer, gameObject) {
+            gameObject.setScale(1.3, 1.3);
         })
 
         const buttonSubmitStory = this.add.image(850,605, "button").setScale(0.5,0.5);
