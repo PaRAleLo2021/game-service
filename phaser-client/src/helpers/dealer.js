@@ -9,7 +9,7 @@ export default class Dealer {
             for (let i = 0; i < 3; i++) {
                 let number = cardNumbers.pop();
                 let playerCard = new Card(scene);
-                playerCard.render(150 + (i * 225), 280 + 340 * j, 'card_' + number, true);
+                playerCard.render(150 + (i * 225), 230 + 340 * j, 'card_' + number, true);
             }
         }
     }
