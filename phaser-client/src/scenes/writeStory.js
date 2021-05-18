@@ -98,7 +98,7 @@ export default class WriteStory extends Phaser.Scene {
         this.input.on('gameobjectdown', function (pointer, gameObject) {
             if(gameObject.texture.key!='button'){
                 if(selectedCard != null){
-                    selectedCard.setTint(0x3f51b5);
+                    selectedCard.setTint(0x7885cb);
                     selectedCard.setScale(1.3, 1.3);
                 }
                 selectedCard = gameObject;
