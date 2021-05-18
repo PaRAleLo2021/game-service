@@ -15,6 +15,7 @@ export default class waitForCards extends Phaser.Scene {
         this.id = data.id;
         this.cardNumbers = data.cardNumbers;
         this.story = data.story;
+        this.cardChoice = data.cardChoice;
     }
 
     preload() {
@@ -25,15 +26,26 @@ export default class waitForCards extends Phaser.Scene {
     create() {
         /**   Game   **/
         this.dealer = new Dealer(this);
-
         let self = this;
 
-        this.dealText = this.add.text(75, 350, ['Wait for all players to choose a card for this story']).setFontSize(20).setFontFamily('Trebuchet MS').setColor('#413b45').setInteractive();
-        this.storyText = this.add.text(75, 400, ['The story: ' + this.story]).setFontSize(30).setFontFamily('Trebuchet MS').setColor('#413b45').setInteractive();
+        var style = { 
+            fontSize: 34,
+            fontFamily: 'Arial',
+            align: "left",
+            color: '#413b45',
+            wordWrap: { width: 250, useAdvancedWrap: true }
+        };
 
-        for (let i = 0; i < 6; i++) {
-            let playerCard = new Card(self);
-            playerCard.render(100 + (i * 165), 650, 'card_0', true);
-        }
+        this.add.text(750, 300, 'Wait for all players to choose a card for this story', style);
+        this.add.text(750, 450, 'The story: ' + this.story, style).setFontSize(40);
+
+        for (let j = 0; j < 2; j++)
+            for (let i = 0; i < 2; i++) {
+                let playerCard = new Card(self);
+                if(j==0 && i==0)
+                    playerCard.render(215 + (i * 225), 290 + 340 * j, this.cardChoice, true).setTint().setScale(1.8, 1.8);
+                else
+                    playerCard.render(240 + (i * 225), 360 + 300 * j, 'card_0', true).setTint().setScale(1, 1);
+            }
     }
 }

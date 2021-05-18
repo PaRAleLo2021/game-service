@@ -123,23 +123,17 @@ export default class WriteStory extends Phaser.Scene {
         buttonSubmitStory.on('pointerdown', () => {
             let storybox = this.storyInput.getChildByName("story");
 
-            let cardNumber = selectedCard;
             if (storybox.value == "" || selectedCard == null) {
                 this.errorMissingCardAndStory.setVisible(true);
             }
 
             else {
                 console.log('My story: ' + storybox.value);
+                console.log('My card: ' + selectedCard.texture.key);
                 self.socket.emit("submitStory", storybox.value, self.id);
-                self.scene.start("waitForCards", { server: self.socket, id: self.id, cardNumbers: cards, story: storybox.value});
+                self.scene.start("waitForCards", { server: self.socket, id: self.id, cardNumbers: cards, story: storybox.value, cardChoice: selectedCard.texture.key});
                 storybox.value = "";
             }
-            /*else{
-                console.log('My card: ' + cardNumber.texture.key);
-                console.log('My story: ' + storybox.value);
-                storybox.value = "";
-
-            }*/
         });
 
         /**   Chat   **/

@@ -107,14 +107,13 @@ export default class chooseCard extends Phaser.Scene {
         const buttonSubmitStory = this.add.image(850,605, "button").setScale(0.5,0.5);
         buttonSubmitStory.setInteractive();
         buttonSubmitStory.on('pointerdown', () => {
-            let cardNumber = selectedCard;
             if (selectedCard == null) {
                 this.errorMissingCard.setVisible(true);
             }
 
             else {
-                console.log('My card: ' + cardNumber.texture.key);
-                self.scene.start("waitForCards", { server: self.socket, id: self.id, cardNumbers: cards, story: ""});
+                console.log('My card: ' + selectedCard.texture.key);
+                self.scene.start("waitForCards", { server: self.socket, id: self.id, cardNumbers: cards, story: this.story, cardChoice: selectedCard.texture.key});
             }
         });
 
