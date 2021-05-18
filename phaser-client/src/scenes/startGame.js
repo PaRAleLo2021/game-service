@@ -86,7 +86,7 @@ export default class StartGame extends Phaser.Scene {
 
         this.enterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
-        let timeText = this.add.text(10, 10, "00:00:00");
+        let timeText;
         function getCurrentTime(){
             var currentdate = new Date(); 
             var time = currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
