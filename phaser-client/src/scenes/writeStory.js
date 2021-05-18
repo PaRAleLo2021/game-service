@@ -137,6 +137,7 @@ export default class WriteStory extends Phaser.Scene {
                 console.log('My story: ' + storybox.value);
                 console.log('My card: ' + selectedCard.texture.key);
                 self.socket.emit("submitStory", storybox.value, self.id);
+                self.socket.emit("gatherCards", selectedCard.texture.key);
                 self.scene.start("waitForCards", { server: self.socket, id: self.id, cardNumbers: cards, story: storybox.value, cardChoice: selectedCard.texture.key});
                 storybox.value = "";
             }

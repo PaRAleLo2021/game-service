@@ -1,4 +1,3 @@
-import io from 'socket.io-client';
 import Dealer from "../helpers/dealer";
 
 export default class chooseCard extends Phaser.Scene {
@@ -119,6 +118,7 @@ export default class chooseCard extends Phaser.Scene {
 
             else {
                 console.log('My card: ' + selectedCard.texture.key);
+                self.socket.emit("gatherCards", selectedCard.texture.key);
                 self.scene.start("waitForCards", { server: self.socket, id: self.id, cardNumbers: cards, story: this.story, cardChoice: selectedCard.texture.key});
             }
         });
