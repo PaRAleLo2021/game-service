@@ -96,21 +96,27 @@ export default class WriteStory extends Phaser.Scene {
         this.text = this.add.text(750, 300, "Choose a card and write your story!", style);
 
         this.input.on('gameobjectdown', function (pointer, gameObject) {
-            if(selectedCard != null){
-                selectedCard.setTint(0x3f51b5);
-                selectedCard.setScale(1.3, 1.3);
+            if(gameObject.texture.key!='button'){
+                if(selectedCard != null){
+                    selectedCard.setTint(0x3f51b5);
+                    selectedCard.setScale(1.3, 1.3);
+                }
+                selectedCard = gameObject;
+                self.children.bringToTop(gameObject);
+                gameObject.setTint();
             }
-            selectedCard = gameObject;
-            self.children.bringToTop(gameObject);
-            gameObject.setTint();
         })
 
         this.input.on('gameobjectover', function (pointer, gameObject) {
-            gameObject.setScale(1.8, 1.8);
+            if(gameObject.texture.key!='button'){
+                gameObject.setScale(1.8, 1.8);
+            }
         })
 
         this.input.on('gameobjectout', function (pointer, gameObject) {
-            gameObject.setScale(1.3, 1.3);
+            if(gameObject.texture.key!='button'){
+                gameObject.setScale(1.3, 1.3);
+            }
         })
 
         /**   Story entry    **/
