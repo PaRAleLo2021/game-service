@@ -8,17 +8,24 @@ export default class StartGame extends Phaser.Scene {
     }
 
     init(){
-        
+        /**   Chat   **/
+        this.socket_chat = io("http://localhost:4000", { 
+            autoConnect: false });
+        this.chatMessages = [];
     }
 
     preload(){
+        /**   Chat   **/
+        this.load.html("form", "src/assets/form.html");
+        
+        /**   Game   **/
         this.load.image('button','src/assets/button-start-game.png');
     }
 
     create(){
         this.isPlayerA = false;
         let self = this;
-        let id;
+        let id = "";
         let cardNumbers = [];
         let buttonStartGame = buttonStartGame = this.add.image(300,600, "button").setScale(0.5,0.5).setVisible(false);
 
@@ -63,6 +70,63 @@ export default class StartGame extends Phaser.Scene {
                 self.scene.start("WriteStory", { server: self.socket, id: id, cardNumbers: cardNumbers});
             }
         })
+
+        /**   Chat   **/
+        this.textInput = this.add.dom(1215, 752).createFromCache("form").setOrigin(0.5).setDepth(0);
+        this.chat = this.add.text(1060, 30, "", { 
+            lineSpacing: 15,
+            fontSize: 20,
+            backgroundColor: "#3f51b5", 
+            color: "white", 
+            padding: 15, 
+            wordWrap: { width: 250, useAdvancedWrap: true }
+        });
+
+        this.chat.setFixedSize(310, 695);
+
+        this.enterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+
+        let timeText = this.add.text(10, 10, "00:00:00");
+        function getCurrentTime(){
+            var currentdate = new Date(); 
+            var time = currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
+            return time;
+        }
+
+        this.enterKey.on("down", event => {
+            let chatbox = this.textInput.getChildByName("chat");
+            if (chatbox.value != "") {
+                this.socket_chat.emit("message", id + "@" + timeText.setText(getCurrentTime()).text + " " + chatbox.value);
+                console.log("Message: " + chatbox.value);
+                chatbox.value = "";
+            }
+        })
+
+        this.socket_chat.connect();
+        
+        this.socket_chat.on("connect", async () => {
+            this.socket_chat.emit("join", "mongodb");
+        });
+        
+        this.socket_chat.on("joined", async (gameId) => {
+            let result = await fetch("http://localhost:4000/chats?room=" + gameId)
+                .then(response => response.json());
+            this.chatMessages = result.messages;
+            this.chatMessages.push("Welcome to " + gameId);
+            if (this.chatMessages.length > 20) {
+                this.chatMessages.shift();
+            }
+            this.chat.setText(this.chatMessages);
+        });
+
+        this.socket_chat.on("message", (message) => {
+            this.chatMessages.push(message);
+            if(this.chatMessages.length > 20) {
+                this.chatMessages.shift();
+            }
+            this.chat.setText(this.chatMessages);
+        });
+
 
     }
 
