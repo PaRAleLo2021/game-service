@@ -93,6 +93,7 @@ export default class voteScene extends Phaser.Scene {
             buttonSubmitCard.disableInteractive();
             textVote.setVisible(false);
             textWait.setVisible(true);
+            self.socket.emit("votedWaiting");
         }
 
         buttonSubmitCard.on('pointerdown', () => {
@@ -113,9 +114,13 @@ export default class voteScene extends Phaser.Scene {
                 this.errorNotYourCard.setVisible(false);
                 textVote.setVisible(false);
                 textWait.setVisible(true);
-                //self.socket.emit("gatherCards", selectedCard.texture.key);
-                //self.scene.start("waitForCards", { server: self.socket, id: self.id, cardNumbers: cards, story: this.story, cardChoice: selectedCard.texture.key});
+                self.socket.emit("gatherVotedCards", selectedCard.texture.key);
+                self.socket.emit("votedWaiting");
             }
+        });
+
+        this.socket.on('voteResults', function (card) {
+            self.scene.start("scoresScene", { server: self.socket, id: self.id, card: card, story: self.story});
         });
     }
 }

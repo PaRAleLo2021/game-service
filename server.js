@@ -6,7 +6,9 @@ const io = require('socket.io')(http);
 let players = [];
 let cards = [];
 let gatheredCards = [];
+let gatheredVotedCards = [];
 let waiting = 0;
+let storytellerCard;
 
 //initialize card numbers array
 let cardNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
@@ -67,6 +69,14 @@ io.on('connection', function (socket) {
         gatheredCards.push(card);
     });
 
+    socket.on('gatherVotedCards', function(card) {
+        gatheredVotedCards.push(card);
+    });
+
+    socket.on('storytellerCard', function(card) {
+        storytellerCard = card;
+    });
+
     socket.on('waiting', function() {
         waiting++;
         if (waiting === players.length) {
@@ -75,6 +85,16 @@ io.on('connection', function (socket) {
             }
             waiting = 0;
             gatheredCards = [];
+        }
+    });
+
+    socket.on('votedWaiting', function() {
+        waiting++;
+        if (waiting === players.length) {
+            for (let i = 0; i < players.length; i++) {
+                io.to(players[i]).emit('voteResults', storytellerCard);
+            }
+            waiting = 0;
         }
     });
 
