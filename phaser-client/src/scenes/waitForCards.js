@@ -14,6 +14,7 @@ export default class waitForCards extends Phaser.Scene {
         this.cardNumbers = data.cardNumbers;
         this.story = data.story;
         this.cardChoice = data.cardChoice;
+        this.isStoryteller = data.isStoryteller;
     }
 
     preload() {
@@ -49,7 +50,7 @@ export default class waitForCards extends Phaser.Scene {
         }
 
         this.socket.on('cardResults', function (cards) {
-            self.scene.start("voteScene", { server: self.socket, id: self.id, cardNumbers: cards, story: self.story});
+            self.scene.start("voteScene", { server: self.socket, id: self.id, cardNumbers: cards, story: self.story, cardChoice: self.cardChoice, isStoryteller: self.isStoryteller});
         });
     }
 

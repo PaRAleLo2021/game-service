@@ -13,6 +13,9 @@ export default class voteScene extends Phaser.Scene {
         this.id = data.id;
         this.cardNumbers = data.cardNumbers;
         this.story = data.story;
+        this.cardChoice =  data.cardChoice;
+        this.isStoryteller = data.isStoryteller;
+        
     }
 
     preload() {
@@ -25,8 +28,13 @@ export default class voteScene extends Phaser.Scene {
         let selectedCard = null;
 
         console.log("Printed cardNumbers - " + this.cardNumbers.length + " : " + this.cardNumbers);
+        for (let i = this.cardNumbers.length - 1; i > 0; i--) {
+            let j = Math.floor(Math.random() * (i + 1));
+            [this.cardNumbers[i], this.cardNumbers[j]] = [this.cardNumbers[j], this.cardNumbers[i]];
+        }
+
         for (let j = 0; j < 2; j++)
-            for (let i = 0; i < 3; i++) {
+            for (let i = 0; i < 2; i++) {
                 let number = this.cardNumbers.pop();
                 let playerCard = new Card(self);
                 playerCard.render(150 + (i * 225), 230 + 340 * j, number, true);
@@ -47,9 +55,11 @@ export default class voteScene extends Phaser.Scene {
             wordWrap: { width: 250, useAdvancedWrap: true }
         };
 
-        this.add.text(750, 300, 'Vote for the picture that describes the story best', style);
+        let textVote = this.add.text(750, 290, 'Vote for the picture that describes the story best!', style);
+        let textWait = this.add.text(750, 290, 'Please wait for all the players to vote.', style).setVisible(false);
         this.add.text(750, 450, 'The story: ' + this.story, style).setFontSize(40);
         this.errorMissingCard = this.add.text(750, 200, 'Please choose a Card!', styleWarning).setVisible(false);
+        this.errorNotYourCard = this.add.text(750, 200, 'You can\'t vote for your own card!', styleWarning).setVisible(false);
 
         this.input.on('gameobjectdown', function (pointer, gameObject) {
             if(gameObject.texture.key!='button'){
@@ -75,15 +85,34 @@ export default class voteScene extends Phaser.Scene {
             }
         })
 
-        const buttonSubmitStory = this.add.image(850,605, "button").setScale(0.5,0.5);
-        buttonSubmitStory.setInteractive();
-        buttonSubmitStory.on('pointerdown', () => {
+        const buttonSubmitCard = this.add.image(850,605, "button").setScale(0.5,0.5);
+        buttonSubmitCard.setInteractive();
+
+        if(self.isStoryteller){
+            buttonSubmitCard.setVisible(false);
+            buttonSubmitCard.disableInteractive();
+            textVote.setVisible(false);
+            textWait.setVisible(true);
+        }
+
+        buttonSubmitCard.on('pointerdown', () => {
             if (selectedCard == null) {
+                this.errorNotYourCard.setVisible(false);
                 this.errorMissingCard.setVisible(true);
+            }
+            else if(selectedCard.texture.key == this.cardChoice){
+                this.errorMissingCard.setVisible(false);
+                this.errorNotYourCard.setVisible(true);
             }
 
             else {
                 console.log('My card: ' + selectedCard.texture.key);
+                buttonSubmitCard.setVisible(false);
+                buttonSubmitCard.disableInteractive();
+                this.errorMissingCard.setVisible(false);
+                this.errorNotYourCard.setVisible(false);
+                textVote.setVisible(false);
+                textWait.setVisible(true);
                 //self.socket.emit("gatherCards", selectedCard.texture.key);
                 //self.scene.start("waitForCards", { server: self.socket, id: self.id, cardNumbers: cards, story: this.story, cardChoice: selectedCard.texture.key});
             }
