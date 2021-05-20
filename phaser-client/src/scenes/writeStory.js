@@ -119,6 +119,19 @@ export default class WriteStory extends Phaser.Scene {
             }
         })
 
+        /**  Score printing  **/
+        this.socket.emit("sendScores");
+        this.socket.on('printScores', function (players, scores) {
+            self.add.text(730, 30, 'Players  &  Scores', { fontSize: 30, fontFamily: 'Arial', fill: '#0B70D5' });
+            
+            for (let i = 0; i < players.length; i++) {
+                if (players[i] === self.id)
+                    self.add.text(730, 80 + (30 * i), 'Me : ' + scores[i], { fontSize: 20, fontFamily: 'Arial', fill: '#0B70D5' });
+                else
+                    self.add.text(730, 80 + (30 * i), players[i] + ' : ' + scores[i], { fontSize: 20, fontFamily: 'Arial', fill: '#0B70D5' });
+            }
+        })
+
         /**   Story entry    **/
         this.errorMissingCardAndStory = this.add.text(750, 200, 'Please choose a Card and write a Story!', styleWarning).setVisible(false);
         this.storyInput = this.add.dom(850, 500).createFromCache("storyform").setOrigin(0.5);

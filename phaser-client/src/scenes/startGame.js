@@ -126,11 +126,5 @@ export default class StartGame extends Phaser.Scene {
             }
             this.chat.setText(this.chatMessages);
         });
-
-
-    }
-
-    update() {
-        
     }
 }
