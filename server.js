@@ -34,6 +34,10 @@ io.on('connection', function (socket) {
         io.emit('isPlayerA');
     };
 
+    if (players.length >= 3) {
+        io.to(players[0]).emit('enableStartButton');
+    }
+
     socket.on('dealCards', function (cardsToGiveOut) {
         for (let i = 0; i < players.length; i++) {
             for (let j = 0; j < cardsToGiveOut; j++) {

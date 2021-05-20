@@ -39,9 +39,18 @@ export default class StartGame extends Phaser.Scene {
         this.socket.on('isPlayerA', function () {
         	self.isPlayerA = true;
             console.log('I am first player (playerA)');
-            buttonStartGame.setInteractive();
-            buttonStartGame.setVisible(true);
-        })
+            waitForCreatorText.setVisible(false);
+            waitForMorePlayersText.setVisible(true);
+        });
+
+        this.socket.on('enableStartButton', function () {
+        	if (self.isPlayerA === true) {
+                buttonStartGame.setInteractive();
+                buttonStartGame.setVisible(true);
+                waitForMorePlayersText.setVisible(false);
+                canStartNowText.setVisible(true);
+            }
+        });
 
         var style = { 
             fontSize: 40,
@@ -51,8 +60,10 @@ export default class StartGame extends Phaser.Scene {
             wordWrap: { width: 450, useAdvancedWrap: true }
         };
 
-        this.add.text(175, 350, 'Please wait for the game creator to start the game.', style);
-        
+        var waitForCreatorText = this.add.text(175, 350, 'Please wait for the game creator to start the game!', style);
+        var waitForMorePlayersText = this.add.text(175, 350, 'Please wait for more players to enter!', style).setVisible(false);
+        var canStartNowText = this.add.text(175, 350, 'You can start the game now! Good luck!', style).setVisible(false);
+
         buttonStartGame.on('pointerdown', () => {
             console.log('pointerover');
             self.socket.emit("dealCards", 6);
