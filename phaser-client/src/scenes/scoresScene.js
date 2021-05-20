@@ -11,8 +11,10 @@ export default class scoresScene extends Phaser.Scene {
         /**   Game   **/
         this.socket = data.server;
         this.id = data.id;
-        this.card = data.card;
+        this.storytellerCard = data.storytellerCard;
         this.story = data.story;
+        this.gatheredCards = data.gatheredCards;
+        this.cardVotes = data.cardVotes;
         
     }
 
@@ -24,9 +26,9 @@ export default class scoresScene extends Phaser.Scene {
         /**   Game   **/
         let self = this;
 
-        console.log("Printed cardNumber - " + " : " + this.card);
+        console.log("Printed cardNumber - " + " : " + this.storytellerCard);
         let StorytellerCard = new Card(self);
-        StorytellerCard.render(150, 230, this.card, true);
+        StorytellerCard.render(150, 230, this.storytellerCard, true);
         
         var style = { 
             fontSize: 34,

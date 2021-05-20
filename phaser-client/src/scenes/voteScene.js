@@ -26,6 +26,7 @@ export default class voteScene extends Phaser.Scene {
         /**   Game   **/
         let self = this;
         let selectedCard = null;
+        let cardNumbersForScore = this.cardNumbers;
 
         console.log("Printed cardNumbers - " + this.cardNumbers.length + " : " + this.cardNumbers);
         for (let i = this.cardNumbers.length - 1; i > 0; i--) {
@@ -119,8 +120,15 @@ export default class voteScene extends Phaser.Scene {
             }
         });
 
-        this.socket.on('voteResults', function (card) {
-            self.scene.start("scoresScene", { server: self.socket, id: self.id, card: card, story: self.story});
+        this.socket.on('voteResults', function (data) {
+            let storytellerCard = data.storytellerCard;
+            let gatheredCards = data.gatheredCards;
+            let cardVotes = data.cardVotes;
+            console.log("StorytellerCard " + storytellerCard);
+            console.log("GatheredCards " + gatheredCards);
+            console.log("Votes " + cardVotes);
+            self.scene.start("scoresScene", { server: self.socket, id: self.id,
+                 storytellerCard: storytellerCard, story: self.story, gatheredCards: gatheredCards, cardVotes: cardVotes});
         });
     }
 }

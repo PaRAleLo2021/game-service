@@ -1,4 +1,4 @@
-const { SSL_OP_EPHEMERAL_RSA } = require('constants');
+const { SSL_OP_EPHEMERAL_RSA, SSL_OP_SSLEAY_080_CLIENT_DH_BUG } = require('constants');
 
 const server = require('express')();
 const http = require('http').createServer(server);
@@ -9,6 +9,8 @@ let gatheredCards = [];
 let gatheredVotedCards = [];
 let waiting = 0;
 let storytellerCard;
+let cardVotes = [];
+let self = this;
 
 //initialize card numbers array
 let cardNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
@@ -49,6 +51,12 @@ io.on('connection', function (socket) {
 
     socket.on('startGame', function(id) {
         console.log('Game is starting...');
+        // initialize game
+        gatheredCards = [];
+        cardVotes = new Array(players.length);
+        for(let i=0; i < players.length; i++){
+            cardVotes[i] = 0;
+        }
         for (let i = 0; i < players.length; i++) {
             if (players[i] !== id) {
                 io.to(players[i]).emit('startGame');
@@ -71,6 +79,10 @@ io.on('connection', function (socket) {
 
     socket.on('gatherVotedCards', function(card) {
         gatheredVotedCards.push(card);
+        for(i=0; i < gatheredCards.length; i++){
+            if(gatheredCards[i] === card)
+                cardVotes[i]++;
+        }
     });
 
     socket.on('storytellerCard', function(card) {
@@ -84,15 +96,17 @@ io.on('connection', function (socket) {
                 io.to(players[i]).emit('cardResults', gatheredCards);
             }
             waiting = 0;
-            gatheredCards = [];
         }
     });
 
     socket.on('votedWaiting', function() {
         waiting++;
         if (waiting === players.length) {
+            console.log("StorytellerCard " + storytellerCard);
+            console.log("GatheredCards " + gatheredCards);
+            console.log("Votes " + cardVotes);
             for (let i = 0; i < players.length; i++) {
-                io.to(players[i]).emit('voteResults', storytellerCard);
+                io.to(players[i]).emit('voteResults', {storytellerCard: storytellerCard, gatheredCards: gatheredCards, cardVotes: cardVotes});
             }
             waiting = 0;
         }
