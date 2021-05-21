@@ -89,18 +89,28 @@ export default class StartGame extends Phaser.Scene {
 
         this.socket.on('startGame', function () {
             console.log('Game is starting, please be patient!');
-            self.scene.start("waitForStory", { server: self.socket, id: id, cardNumbers: cardNumbers});
+            self.scene.launch("waitForStory", { server: self.socket, id: id, cardNumbers: cardNumbers});
+            waitForCreatorText.setVisible(false);
+            waitForMorePlayersText.setVisible(false);
+            canStartNowText.setVisible(false);
+            buttonStartGame.setVisible(false);
+            buttonStartGame.disableInteractive();
         })
 
         this.socket.on('dealCards', function (c) {
             cardNumbers = c;
             if (self.isPlayerA === true) {
                 self.socket.emit("startGame", id);
-                self.scene.start("WriteStory", { server: self.socket, id: id, cardNumbers: cardNumbers});
+                self.scene.launch("WriteStory", { server: self.socket, id: id, cardNumbers: cardNumbers});
+                //self.scene.remove("StartGame");
             }
+            waitForCreatorText.setVisible(false);
+            waitForMorePlayersText.setVisible(false);
+            canStartNowText.setVisible(false);
+            buttonStartGame.setVisible(false);
+            buttonStartGame.disableInteractive();
         })
 
-        /**   Chat   **/
         this.textInput = this.add.dom(1215, 752).createFromCache("form").setOrigin(0.5).setDepth(0);
         this.chat = this.add.text(1060, 30, "", { 
             lineSpacing: 10,
@@ -113,12 +123,10 @@ export default class StartGame extends Phaser.Scene {
 
         this.chat.setFixedSize(310, 695);
 
-        this.enterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
-
-        this.enterKey.on("down", event => {
-            let chatbox = this.textInput.getChildByName("chat");
+        this.input.keyboard.on("keydown-ENTER", function (event) {
+            let chatbox = self.textInput.getChildByName("chat");
             if (chatbox.value != "") {
-                this.socket_chat.emit("message", ">> " + this.username+": "+chatbox.value);
+                self.socket_chat.emit("message", ">> " + self.username+": "+chatbox.value);
                 console.log("Message: " + chatbox.value);
                 chatbox.value = "";
             }
@@ -127,7 +135,7 @@ export default class StartGame extends Phaser.Scene {
         this.socket_chat.connect();
         
         this.socket_chat.on("connect", async () => {
-            this.socket_chat.emit("join", this.gameid);
+            self.socket_chat.emit("join", ""+self.gameid.value);
         });
         
         this.socket_chat.on("joined", async (gameId) => {
@@ -148,5 +156,17 @@ export default class StartGame extends Phaser.Scene {
             }
             this.chat.setText(this.chatMessages);
         });
+
+        /**  Score printing  **/
+        this.socket.on('printScores', function (players, scores) {
+            self.add.text(730, 30, 'Players  &  Scores', { fontSize: 30, fontFamily: 'Arial', fill: '#0B70D5' });
+            
+            for (let i = 0; i < players.length; i++) {
+                if (players[i] === self.username)
+                    self.add.text(730, 80 + (30 * i), 'Me : ' + scores[i], { fontSize: 20, fontFamily: 'Arial', fill: '#0B70D5' });
+                else
+                    self.add.text(730, 80 + (30 * i), players[i] + ' : ' + scores[i], { fontSize: 20, fontFamily: 'Arial', fill: '#0B70D5' });
+            }
+        })
     }
 }

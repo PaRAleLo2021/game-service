@@ -14,21 +14,7 @@ export default class scoresScene extends Phaser.Scene {
         this.storytellerCard = data.storytellerCard;
         this.story = data.story;
         this.gatheredCards = data.gatheredCards;
-        this.cardVotes = data.cardVotes;
-
-        /**   Game Get Username And Game ID   **/
-        function getParameterByName(name, url = window.location.href) {
-            name = name.replace(/[\[\]]/g, '\\$&');
-            var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-                results = regex.exec(url);
-            if (!results) return null;
-            if (!results[2]) return '';
-            return decodeURIComponent(results[2].replace(/\+/g, ' '));
-        }
-        
-        this.username = getParameterByName('username');
-        this.gameid = getParameterByName('gameid');
-        
+        this.cardVotes = data.cardVotes;        
     }
 
     preload() {

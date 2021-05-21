@@ -9,33 +9,14 @@ export default class WriteStory extends Phaser.Scene {
     }
 
     init(data){
-        /**   Chat   **/
-        this.socket_chat = io("http://localhost:4000", { 
-            autoConnect: false });
-        this.chatMessages = [];
 
         /**   Game   **/
         this.socket = data.server;
         this.id = data.id;
         this.cardNumbers = data.cardNumbers;
-
-        /**   Game Get Username And Game ID   **/
-        function getParameterByName(name, url = window.location.href) {
-            name = name.replace(/[\[\]]/g, '\\$&');
-            var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-                results = regex.exec(url);
-            if (!results) return null;
-            if (!results[2]) return '';
-            return decodeURIComponent(results[2].replace(/\+/g, ' '));
-        }
-        
-        this.username = getParameterByName('username');
-        this.gameid = getParameterByName('gameid');
     }
 
     preload() {
-        /**   Chat   **/
-        this.load.html("form", "src/assets/form.html");
 
         /**  Story form   **/
         this.load.html("storyform", "src/assets/storyform.html");
@@ -90,7 +71,10 @@ export default class WriteStory extends Phaser.Scene {
         this.dealer = new Dealer(this);      
         let selectedCard = null;
 
-        self.dealer.dealCards(this.cardNumbers);  
+        self.dealer.dealCards(this.cardNumbers);
+
+        /**  Score printing  **/
+        this.socket.emit("sendScores");
         
         var style = { 
             fontSize: 34,
@@ -132,23 +116,11 @@ export default class WriteStory extends Phaser.Scene {
             }
         })
 
-        /**  Score printing  **/
-        this.socket.emit("sendScores");
-        this.socket.on('printScores', function (players, scores) {
-            self.add.text(730, 30, 'Players  &  Scores', { fontSize: 30, fontFamily: 'Arial', fill: '#0B70D5' });
-            
-            for (let i = 0; i < players.length; i++) {
-                if (players[i] === self.username)
-                    self.add.text(730, 80 + (30 * i), 'Me : ' + scores[i], { fontSize: 20, fontFamily: 'Arial', fill: '#0B70D5' });
-                else
-                    self.add.text(730, 80 + (30 * i), players[i] + ' : ' + scores[i], { fontSize: 20, fontFamily: 'Arial', fill: '#0B70D5' });
-            }
-        })
 
         /**   Story entry    **/
         this.errorMissingCardAndStory = this.add.text(750, 200, 'Please choose a Card and write a Story!', styleWarning).setVisible(false);
         this.storyInput = this.add.dom(850, 500).createFromCache("storyform").setOrigin(0.5);
-        this.enterStoryKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+        //this.enterStoryKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
         const buttonSubmitStory = this.add.image(850,605, "button").setScale(0.5,0.5);
         buttonSubmitStory.setInteractive();
@@ -168,55 +140,6 @@ export default class WriteStory extends Phaser.Scene {
                 self.scene.start("waitForCards", { server: self.socket, id: self.id, cardNumbers: cards, story: storybox.value, cardChoice: selectedCard.texture.key, isStoryteller: true});
                 storybox.value = "";
             }
-        });
-
-        /**   Chat   **/
-        this.textInput = this.add.dom(1195, 752).createFromCache("form").setOrigin(0.5).setDepth(0);
-        this.chat = this.add.text(1060, 30, "", { 
-            lineSpacing: 15, 
-            backgroundColor: "#3f51b5", 
-            color: "white", 
-            padding: 10, 
-            fontStyle: "bold",
-            wordWrap: { width: 250, useAdvancedWrap: true }
-        });
-
-        this.chat.setFixedSize(270, 645);
-
-        this.enterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
-
-        this.enterKey.on("down", event => {
-            let chatbox = this.textInput.getChildByName("chat");
-            if (chatbox.value != "") {
-                this.socket_chat.emit("message", chatbox.value);
-                console.log("Message: " + chatbox.value);
-                chatbox.value = "";
-            }
-        })
-
-        this.socket_chat.connect();
-        
-        this.socket_chat.on("connect", async () => {
-            this.socket_chat.emit("join", "mongodb");
-        });
-        
-        this.socket_chat.on("joined", async (gameId) => {
-            let result = await fetch("http://localhost:4000/chats?room=" + gameId)
-                .then(response => response.json());
-            this.chatMessages = result.messages;
-            this.chatMessages.push("Welcome to " + gameId);
-            if (this.chatMessages.length > 20) {
-                this.chatMessages.shift();
-            }
-            this.chat.setText(this.chatMessages);
-        });
-
-        this.socket_chat.on("message", (message) => {
-            this.chatMessages.push(message);
-            if(this.chatMessages.length > 20) {
-                this.chatMessages.shift();
-            }
-            this.chat.setText(this.chatMessages);
         });
 
     }
