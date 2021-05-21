@@ -97,7 +97,6 @@ export default class StartGame extends Phaser.Scene {
 
         this.enterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
-        let timeText;
         function getCurrentTime(){
             var currentdate = new Date(); 
             var time = currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
@@ -107,7 +106,7 @@ export default class StartGame extends Phaser.Scene {
         this.enterKey.on("down", event => {
             let chatbox = this.textInput.getChildByName("chat");
             if (chatbox.value != "") {
-                this.socket_chat.emit("message", id + "@" + timeText.setText(getCurrentTime()).text + " " + chatbox.value);
+                this.socket_chat.emit("message", id + "@" + getCurrentTime() + " " + chatbox.value);
                 console.log("Message: " + chatbox.value);
                 chatbox.value = "";
             }
