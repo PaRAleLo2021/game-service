@@ -50,7 +50,7 @@ express.get("/chats", async (request, response) => {
 http.listen(4000, async () => {
     try {
         await client.connect();
-        collection = client.db("gamedev").collection("chats");
+        collection = client.db("gameDatabase").collection("chats");
         console.log("Listening on port :%s...", http.address().port);
     } catch (e) {
         console.error(e);

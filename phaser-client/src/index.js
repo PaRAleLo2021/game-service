@@ -27,7 +27,7 @@ const config = {
         waitForCards,
         voteScene,
         scoresScene
-    ]
+    ],
 };
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -42,8 +42,8 @@ function getParameterByName(name, url = window.location.href) {
     return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
 
-var username = getParameterByName('username');
-var gameid = getParameterByName('gameid');
+let username = getParameterByName('username');
+let gameid = getParameterByName('gameid');
 console.log(username);
 console.log(gameid);
 

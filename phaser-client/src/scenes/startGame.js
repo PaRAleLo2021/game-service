@@ -12,6 +12,18 @@ export default class StartGame extends Phaser.Scene {
         this.socket_chat = io("http://localhost:4000", { 
             autoConnect: false });
         this.chatMessages = [];
+
+        function getParameterByName(name, url = window.location.href) {
+            name = name.replace(/[\[\]]/g, '\\$&');
+            var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, ' '));
+        }
+        
+        this.username = getParameterByName('username');
+        this.gameid = getParameterByName('gameid');
     }
 
     preload(){
@@ -27,6 +39,9 @@ export default class StartGame extends Phaser.Scene {
         let self = this;
         let id = "";
         let cardNumbers = [];
+        console.log(this.username);
+        console.log(this.gameid);
+
         let buttonStartGame = buttonStartGame = this.add.image(300,600, "button").setScale(0.5,0.5).setVisible(false);
 
         this.socket = io('http://localhost:3000', {transports : ["websocket"] });
@@ -85,28 +100,22 @@ export default class StartGame extends Phaser.Scene {
         /**   Chat   **/
         this.textInput = this.add.dom(1215, 752).createFromCache("form").setOrigin(0.5).setDepth(0);
         this.chat = this.add.text(1060, 30, "", { 
-            lineSpacing: 15,
+            lineSpacing: 10,
             fontSize: 20,
             backgroundColor: "#3f51b5", 
             color: "white", 
-            padding: 15, 
-            wordWrap: { width: 250, useAdvancedWrap: true }
+            padding: 15,
+            wordWrap: { width: 280, useAdvancedWrap: true }
         });
 
         this.chat.setFixedSize(310, 695);
 
         this.enterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
-        function getCurrentTime(){
-            var currentdate = new Date(); 
-            var time = currentdate.getHours() + ":"  + currentdate.getMinutes() + ":" + currentdate.getSeconds();
-            return time;
-        }
-
         this.enterKey.on("down", event => {
             let chatbox = this.textInput.getChildByName("chat");
             if (chatbox.value != "") {
-                this.socket_chat.emit("message", id + "@" + getCurrentTime() + " " + chatbox.value);
+                this.socket_chat.emit("message", ">> " + this.username+": "+chatbox.value);
                 console.log("Message: " + chatbox.value);
                 chatbox.value = "";
             }
@@ -115,15 +124,15 @@ export default class StartGame extends Phaser.Scene {
         this.socket_chat.connect();
         
         this.socket_chat.on("connect", async () => {
-            this.socket_chat.emit("join", "mongodb");
+            this.socket_chat.emit("join", this.gameid);
         });
         
         this.socket_chat.on("joined", async (gameId) => {
             let result = await fetch("http://localhost:4000/chats?room=" + gameId)
                 .then(response => response.json());
             this.chatMessages = result.messages;
-            this.chatMessages.push("Welcome to " + gameId);
-            if (this.chatMessages.length > 20) {
+            this.chatMessages.push("\n*** Game Chat Start ***");
+            if (this.chatMessages.length > 7) {
                 this.chatMessages.shift();
             }
             this.chat.setText(this.chatMessages);
@@ -131,7 +140,7 @@ export default class StartGame extends Phaser.Scene {
 
         this.socket_chat.on("message", (message) => {
             this.chatMessages.push(message);
-            if(this.chatMessages.length > 20) {
+            if(this.chatMessages.length > 7) {
                 this.chatMessages.shift();
             }
             this.chat.setText(this.chatMessages);
