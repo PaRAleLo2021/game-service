@@ -18,6 +18,19 @@ export default class WriteStory extends Phaser.Scene {
         this.socket = data.server;
         this.id = data.id;
         this.cardNumbers = data.cardNumbers;
+
+        /**   Game Get Username And Game ID   **/
+        function getParameterByName(name, url = window.location.href) {
+            name = name.replace(/[\[\]]/g, '\\$&');
+            var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, ' '));
+        }
+        
+        this.username = getParameterByName('username');
+        this.gameid = getParameterByName('gameid');
     }
 
     preload() {
@@ -125,7 +138,7 @@ export default class WriteStory extends Phaser.Scene {
             self.add.text(730, 30, 'Players  &  Scores', { fontSize: 30, fontFamily: 'Arial', fill: '#0B70D5' });
             
             for (let i = 0; i < players.length; i++) {
-                if (players[i] === self.id)
+                if (players[i] === self.username)
                     self.add.text(730, 80 + (30 * i), 'Me : ' + scores[i], { fontSize: 20, fontFamily: 'Arial', fill: '#0B70D5' });
                 else
                     self.add.text(730, 80 + (30 * i), players[i] + ' : ' + scores[i], { fontSize: 20, fontFamily: 'Arial', fill: '#0B70D5' });

@@ -13,6 +13,7 @@ export default class StartGame extends Phaser.Scene {
             autoConnect: false });
         this.chatMessages = [];
 
+        /**   Game Get Username And Game ID   **/
         function getParameterByName(name, url = window.location.href) {
             name = name.replace(/[\[\]]/g, '\\$&');
             var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
@@ -41,7 +42,7 @@ export default class StartGame extends Phaser.Scene {
         let cardNumbers = [];
         console.log(this.username);
         console.log(this.gameid);
-
+        /**   Game   **/
         let buttonStartGame = buttonStartGame = this.add.image(300,600, "button").setScale(0.5,0.5).setVisible(false);
 
         this.socket = io('http://localhost:3000', {transports : ["websocket"] });
@@ -57,6 +58,8 @@ export default class StartGame extends Phaser.Scene {
             waitForCreatorText.setVisible(false);
             waitForMorePlayersText.setVisible(true);
         });
+
+        this.socket.emit("saveUsername", this.username);
 
         this.socket.on('enableStartButton', function () {
         	if (self.isPlayerA === true) {
