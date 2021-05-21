@@ -26,6 +26,8 @@ export default class scoresScene extends Phaser.Scene {
         let self = this;
         let totalVotes = 0;
 
+        this.socket.emit("sendScores");
+
         var style = { 
             fontSize: 32,
             fontFamily: 'Arial',

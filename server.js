@@ -4,6 +4,7 @@ const server = require('express')();
 const http = require('http').createServer(server);
 const io = require('socket.io')(http);
 let playersId = [];
+let storyteller = 0;
 let playersUsername = [];
 let scores = [];
 let cards = [];
@@ -35,6 +36,7 @@ io.on('connection', function (socket) {
 
     if (playersId.length === 1) {
         io.emit('isPlayerA');
+
     };
 
     if (playersId.length >= 3) {
@@ -88,9 +90,10 @@ io.on('connection', function (socket) {
         gatheredCards.push(card);
     });
 
-    socket.on('gatherVotedCards', function(card) {
-        gatheredVotedCards.push(card);
+    socket.on('gatherVotedCards', function(card, id) {
         for(i=0; i < gatheredCards.length; i++){
+            if(id === playersId[i])
+                gatheredVotedCards[i]=card;
             if(gatheredCards[i] === card)
                 cardVotes[i]++;
         }
@@ -124,6 +127,36 @@ io.on('connection', function (socket) {
     });
 
     socket.on('sendScores', function() {
+        /*** Scoring Logic ***/
+        let votesSum = 0
+        for(let i=0; i<cardVotes.length; i++)
+            votesSum = votesSum+cardVotes[i];
+        if(votesSum>1){
+            let storytellerVotes = cardVotes[storyteller];
+            if(storytellerVotes===playersId.length-1||storytellerVotes===0){
+                for(let i=0; i<playersId.length; i++){
+                    scores[i]=scores[i]+2;
+                }
+                scores[storyteller]=scores[storyteller]-2;
+            }
+            else{
+                for(let i=0; i<playersId.length; i++){
+                    if(i!=storyteller&&storytellerCard===gatheredVotedCards[i])
+                        scores[i]=scores[i]+3;
+                }
+                scores[storyteller]=scores[storyteller]+3;
+            }
+            for(let i=0; i<playersId.length; i++)
+                if(i!==storyteller)
+                    scores[i]= scores[i]+cardVotes[i];
+        
+            for(let i=0; i < playersId.length; i++){
+                gatheredVotedCards[i] = "";
+            }
+            for(let i=0; i < playersId.length; i++){
+                cardVotes[i] = 0;
+            }
+        }
         io.to(socket.id).emit('printScores', playersUsername, scores);
     });
 

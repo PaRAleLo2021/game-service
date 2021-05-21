@@ -114,7 +114,7 @@ export default class voteScene extends Phaser.Scene {
                 this.errorNotYourCard.setVisible(false);
                 textVote.setVisible(false);
                 textWait.setVisible(true);
-                self.socket.emit("gatherVotedCards", selectedCard.texture.key);
+                self.socket.emit("gatherVotedCards", selectedCard.texture.key, this.id);
                 self.socket.emit("votedWaiting");
             }
         });
