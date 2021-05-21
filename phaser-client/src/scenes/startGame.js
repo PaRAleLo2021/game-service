@@ -158,14 +158,26 @@ export default class StartGame extends Phaser.Scene {
         });
 
         /**  Score printing  **/
+        var style = { 
+            fontSize: 30,
+            fontFamily: 'Arial',
+            align: "left",
+            color: '#413b45',
+            wordWrap: { width: 450, useAdvancedWrap: true }
+        };
+        let textPlayersAndScores=this.add.text(790, 30, 'Players  &  Scores', style).setVisible(false);
+        this.textPlayer = [];
+        for(let i=0; i<4; i++){
+            this.textPlayer.push(this.add.text(800, 80 + (30 * i),"", style).setFontSize(20));
+        }
         this.socket.on('printScores', function (players, scores) {
-            self.add.text(730, 30, 'Players  &  Scores', { fontSize: 30, fontFamily: 'Arial', fill: '#0B70D5' });
+            textPlayersAndScores.setVisible(true);
             
             for (let i = 0; i < players.length; i++) {
                 if (players[i] === self.username)
-                    self.add.text(730, 80 + (30 * i), 'Me : ' + scores[i], { fontSize: 20, fontFamily: 'Arial', fill: '#0B70D5' });
+                    self.textPlayer[i].text = 'Me : ' + scores[i];
                 else
-                    self.add.text(730, 80 + (30 * i), players[i] + ' : ' + scores[i], { fontSize: 20, fontFamily: 'Arial', fill: '#0B70D5' });
+                    self.textPlayer[i].text = players[i] + ' : ' + scores[i];
             }
         })
     }
