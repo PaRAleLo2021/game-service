@@ -6,8 +6,8 @@ const io = require('socket.io')(http);
 let playersId = [];
 let storyteller = 0;
 let playersUsername = [];
+let playersCards = [];
 let scores = [];
-let cards = [];
 let gatheredCards = [];
 let gatheredVotedCards = [];
 let waiting = 0;
@@ -16,8 +16,8 @@ let cardVotes = [];
 let self = this;
 
 //initialize card numbers array
-let cardNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18,
-    19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36];
+let cardNumbers = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18",
+    "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36"];
 //shuffle
 shuffle(cardNumbers);
 
@@ -47,14 +47,19 @@ io.on('connection', function (socket) {
         playersUsername.push(username);
     });
 
-    socket.on('dealCards', function (cardsToGiveOut) {
-        for (let i = 0; i < playersId.length; i++) {
-            for (let j = 0; j < cardsToGiveOut; j++) {
-                cards.push(cardNumbers.pop());
+    socket.on('dealCards', function (id) {
+        for (let i=0; i<playersId.length; i++) {
+            if(playersId[i]==id){
+                let cards=[];
+                for(let j=i*6; j<6*(i+1); j++){
+                    if(playersCards[j]=="")
+                        playersCards[j]==cardNumbers.pop();
+                    cards.push(playersCards[j]);
+                }
+                io.to(playersId[i]).emit('dealCards', cards);
+                console.log("Sent cards"+ cards.length +": " + cards + " left cards " + cardNumbers.length);
+                playersCards[i*6] = cards;
             }
-            io.to(playersId[i]).emit('dealCards', cards);
-            console.log("Sent cards: " + cards.length + ", remained: " + cardNumbers.length);
-            cards = [];
         }
     });
 
@@ -75,6 +80,16 @@ io.on('connection', function (socket) {
                 io.to(playersId[i]).emit('startGame');
             }
         }
+        playersCards = [];
+        let cards=[];
+        for (let i = 0; i < playersId.length; i++) {
+            for (let j = 0; j < 6; j++) {
+                playersCards.push(cardNumbers.pop());
+            }
+            cards = [];
+        }
+        console.log("All cards added "+ playersCards);
+        console.log("Cards left: "+ cardNumbers.length);
     });
 
     socket.on('submitStory', function(story, id) {

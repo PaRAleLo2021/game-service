@@ -39,7 +39,6 @@ export default class StartGame extends Phaser.Scene {
         this.isPlayerA = false;
         let self = this;
         let id = "";
-        let cardNumbers = [];
         console.log(this.username);
         console.log(this.gameid);
         /**   Game   **/
@@ -83,13 +82,19 @@ export default class StartGame extends Phaser.Scene {
         var canStartNowText = this.add.text(175, 350, 'You can start the game now! Good luck!', style).setVisible(false);
 
         buttonStartGame.on('pointerdown', () => {
-            console.log('pointerover');
-            self.socket.emit("dealCards", 6);
+            self.socket.emit("startGame", id);
+            self.scene.launch("WriteStory", { server: self.socket, id: id});
+
+            waitForCreatorText.setVisible(false);
+            waitForMorePlayersText.setVisible(false);
+            canStartNowText.setVisible(false);
+            buttonStartGame.setVisible(false);
+            buttonStartGame.disableInteractive();
         });
 
         this.socket.on('startGame', function () {
             console.log('Game is starting, please be patient!');
-            self.scene.launch("waitForStory", { server: self.socket, id: id, cardNumbers: cardNumbers});
+            self.scene.launch("waitForStory", { server: self.socket, id: id});
             waitForCreatorText.setVisible(false);
             waitForMorePlayersText.setVisible(false);
             canStartNowText.setVisible(false);
@@ -97,19 +102,7 @@ export default class StartGame extends Phaser.Scene {
             buttonStartGame.disableInteractive();
         })
 
-        this.socket.on('dealCards', function (c) {
-            cardNumbers = c;
-            if (self.isPlayerA === true) {
-                self.socket.emit("startGame", id);
-                self.scene.launch("WriteStory", { server: self.socket, id: id, cardNumbers: cardNumbers});
-                //self.scene.remove("StartGame");
-            }
-            waitForCreatorText.setVisible(false);
-            waitForMorePlayersText.setVisible(false);
-            canStartNowText.setVisible(false);
-            buttonStartGame.setVisible(false);
-            buttonStartGame.disableInteractive();
-        })
+        /**   Chat   **/
 
         this.textInput = this.add.dom(1215, 752).createFromCache("form").setOrigin(0.5).setDepth(0);
         this.chat = this.add.text(1060, 30, "", { 

@@ -19,7 +19,7 @@ export default class waitForCards extends Phaser.Scene {
 
     preload() {
         /**   Cards   **/
-        this.load.image('card_0', 'src/assets/card-0.png');
+        this.load.image('card_00', 'src/assets/card-0.png');
     }
 
     create() {
@@ -45,7 +45,7 @@ export default class waitForCards extends Phaser.Scene {
                 if(j==0 && i==0)
                     playerCard.render(215 + (i * 225), 290 + 340 * j, this.cardChoice, true).setTint().setScale(1.8, 1.8);
                 else
-                    playerCard.render(240 + (i * 225), 360 + 300 * j, 'card_0', true).setTint().setScale(1, 1);
+                    playerCard.render(240 + (i * 225), 360 + 300 * j, 'card_00', true).setTint().setScale(1, 1);
             }
         }
 

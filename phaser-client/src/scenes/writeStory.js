@@ -13,7 +13,7 @@ export default class WriteStory extends Phaser.Scene {
         /**   Game   **/
         this.socket = data.server;
         this.id = data.id;
-        this.cardNumbers = data.cardNumbers;
+        this.cardNumbers = [];
     }
 
     preload() {
@@ -24,16 +24,16 @@ export default class WriteStory extends Phaser.Scene {
         this.load.image('button','src/assets/button-start-game.png');
 
         /**   Cards   **/
-        this.load.image('card_0', 'src/assets/card-0.png');
-        this.load.image('card_1', 'src/assets/card-1.png');
-        this.load.image('card_2', 'src/assets/card-2.png');
-        this.load.image('card_3', 'src/assets/card-3.png');
-        this.load.image('card_4', 'src/assets/card-4.png');
-        this.load.image('card_5', 'src/assets/card-5.png');
-        this.load.image('card_6', 'src/assets/card-6.png');
-        this.load.image('card_7', 'src/assets/card-7.png');
-        this.load.image('card_8', 'src/assets/card-8.png');
-        this.load.image('card_9', 'src/assets/card-9.png');
+        this.load.image('card_00', 'src/assets/card-0.png');
+        this.load.image('card_01', 'src/assets/card-1.png');
+        this.load.image('card_02', 'src/assets/card-2.png');
+        this.load.image('card_03', 'src/assets/card-3.png');
+        this.load.image('card_04', 'src/assets/card-4.png');
+        this.load.image('card_05', 'src/assets/card-5.png');
+        this.load.image('card_06', 'src/assets/card-6.png');
+        this.load.image('card_07', 'src/assets/card-7.png');
+        this.load.image('card_08', 'src/assets/card-8.png');
+        this.load.image('card_09', 'src/assets/card-9.png');
         this.load.image('card_10', 'src/assets/card-10.png');
         this.load.image('card_11', 'src/assets/card-11.png');
         this.load.image('card_12', 'src/assets/card-12.png');
@@ -70,8 +70,15 @@ export default class WriteStory extends Phaser.Scene {
         let cards = this.cardNumbers.slice(0);
         this.dealer = new Dealer(this);      
         let selectedCard = null;
-
-        self.dealer.dealCards(this.cardNumbers);
+        
+        self.socket.emit("dealCards",this.id);
+        this.socket.on('dealCards', function (c) {
+            console.log("I receved cards" + c);
+            self.cardNumbers = c;
+            self.dealer.dealCards(self.cardNumbers);
+            
+        })        
+        
 
         /**  Score printing  **/
         this.socket.emit("sendScores");
