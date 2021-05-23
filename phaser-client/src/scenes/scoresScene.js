@@ -65,8 +65,10 @@ export default class scoresScene extends Phaser.Scene {
             for (let i = 0; i < 2; i++) {
                 let playerCard = new Card(self);
                 if(this.gatheredCards.length > i + j*2 +1){
-                    playerCard.render(445 + (i * 225), 230 + 340 * j, this.gatheredCards[i + j*2+1], true).setTint();
-                    this.add.text(405 + (i * 225), 345 + 340 * j, " Votes "+this.cardVotes[i + j*2+1]+"/"+totalVotes+" ", styleBlackBackground);
+                    if(this.gatheredCards[i + j*2+1]!=""){
+                        playerCard.render(445 + (i * 225), 230 + 340 * j, this.gatheredCards[i + j*2+1], true).setTint();
+                        this.add.text(405 + (i * 225), 345 + 340 * j, " Votes "+this.cardVotes[i + j*2+1]+"/"+totalVotes+" ", styleBlackBackground);
+                    }
                 }
             }
         

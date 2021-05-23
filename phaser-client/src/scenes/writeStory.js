@@ -127,7 +127,6 @@ export default class WriteStory extends Phaser.Scene {
         /**   Story entry    **/
         this.errorMissingCardAndStory = this.add.text(750, 200, 'Please choose a Card and write a Story!', styleWarning).setVisible(false);
         this.storyInput = this.add.dom(850, 500).createFromCache("storyform").setOrigin(0.5);
-        //this.enterStoryKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
         const buttonSubmitStory = this.add.image(850,605, "button").setScale(0.5,0.5);
         buttonSubmitStory.setInteractive();
@@ -143,7 +142,7 @@ export default class WriteStory extends Phaser.Scene {
                 console.log('My card: ' + selectedCard.texture.key);
                 self.socket.emit("submitStory", storybox.value, self.id);
                 self.socket.emit("storytellerCard", selectedCard.texture.key);
-                self.socket.emit("gatherCards", selectedCard.texture.key);
+                self.socket.emit("gatherCards", selectedCard.texture.key, this.id);
                 self.scene.start("waitForCards", { server: self.socket, id: self.id, cardNumbers: cards, story: storybox.value, cardChoice: selectedCard.texture.key, isStoryteller: true});
                 storybox.value = "";
             }

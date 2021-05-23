@@ -70,7 +70,7 @@ io.on('connection', function (socket) {
     socket.on('startGame', function(id) {
         console.log('Game is starting...');
         // initialize game
-        gatheredCards = [];
+        gatheredCards = ["","","",""];
         cardVotes = new Array(playersId.length);
         for(let i=0; i < playersId.length; i++){
             cardVotes[i] = 0;
@@ -101,8 +101,14 @@ io.on('connection', function (socket) {
         }
     });
 
-    socket.on('gatherCards', function(card) {
-        gatheredCards.push(card);
+    socket.on('gatherCards', function(card, id) {
+        // remove card from hand
+        for(let i=0; i<playersCards.length; i++)
+            if(card.includes(playersCards[i]))
+                playersCards[i]="";
+        for(let i=0; i<playersId.length; i++)
+            if(playersId[i]==id)
+                gatheredCards[i]=card;
     });
 
     socket.on('gatherVotedCards', function(card, id) {

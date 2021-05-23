@@ -36,8 +36,10 @@ export default class voteScene extends Phaser.Scene {
         for (let j = 0; j < 2; j++)
             for (let i = 0; i < 2; i++) {
                 let number = this.cardNumbers.pop();
-                let playerCard = new Card(self);
-                playerCard.render(150 + (i * 225), 230 + 340 * j, number, true);
+                if(number!=""){
+                    let playerCard = new Card(self);
+                    playerCard.render(150 + (i * 225), 230 + 340 * j, number, true);
+                }
             }
 
         var style = { 
