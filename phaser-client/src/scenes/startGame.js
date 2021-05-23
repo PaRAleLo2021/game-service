@@ -128,7 +128,7 @@ export default class StartGame extends Phaser.Scene {
         this.socket_chat.connect();
         
         this.socket_chat.on("connect", async () => {
-            self.socket_chat.emit("join", ""+self.gameid.value);
+            self.socket_chat.emit("join", ""+self.gameid);
         });
         
         this.socket_chat.on("joined", async (gameId) => {
