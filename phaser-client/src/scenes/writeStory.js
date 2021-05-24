@@ -14,6 +14,7 @@ export default class WriteStory extends Phaser.Scene {
         this.socket = data.server;
         this.id = data.id;
         this.cardNumbers = [];
+        this.cards = [];
     }
 
     preload() {
@@ -67,15 +68,19 @@ export default class WriteStory extends Phaser.Scene {
         /**   Game   **/
         this.isPlayerA = false;
         let self = this;
-        let cards = this.cardNumbers.slice(0);
+        // = this.cardNumbers.slice(0);
         this.dealer = new Dealer(this);      
         let selectedCard = null;
         
-        self.socket.emit("dealCards",this.id);
+        this.socket.emit("dealCards",this.id);
         this.socket.on('dealCards', function (c) {
             console.log("I receved cards" + c);
-            self.cardNumbers = c;
-            self.dealer.dealCards(self.cardNumbers);
+            //self.cardNumbers = c;
+            for(let i=0; i<c.length; i++){
+                self.cardNumbers[i]=c[i];
+                self.cards[i]=c[i];
+            }
+            self.dealer.dealCards(self.cardNumbers); 
             
         })        
         
@@ -143,7 +148,7 @@ export default class WriteStory extends Phaser.Scene {
                 self.socket.emit("submitStory", storybox.value, self.id);
                 self.socket.emit("storytellerCard", selectedCard.texture.key);
                 self.socket.emit("gatherCards", selectedCard.texture.key, this.id);
-                self.scene.start("waitForCards", { server: self.socket, id: self.id, cardNumbers: cards, story: storybox.value, cardChoice: selectedCard.texture.key, isStoryteller: true});
+                self.scene.start("waitForCards", { server: self.socket, id: self.id, cardNumbers: self.cards, story: storybox.value, cardChoice: selectedCard.texture.key, isStoryteller: true});
                 storybox.value = "";
             }
         });

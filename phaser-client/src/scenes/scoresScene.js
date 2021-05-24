@@ -86,6 +86,12 @@ export default class scoresScene extends Phaser.Scene {
             });
         }
 
-        
+        this.socket.on('continueNormalPlayer', function () {
+            self.scene.start("waitForStory", { server: self.socket, id: self.id});  
+        })
+
+        this.socket.on('continueStoryteller', function () {
+            self.scene.start("WriteStory", { server: self.socket, id: self.id});        
+        })
     }
 }

@@ -13,6 +13,8 @@ export default class chooseCard extends Phaser.Scene {
         this.id = data.id;
         this.cardNumbers = data.cardNumbers;
         this.story = data.story;
+
+        this.cards = [];
     }
 
     preload() {
@@ -62,7 +64,9 @@ export default class chooseCard extends Phaser.Scene {
         /**   Game   **/
         this.dealer = new Dealer(this);
         let self = this;
-        let cards = this.cardNumbers.slice(0);
+        for(let i=0; i<this.cardNumbers.length; i++){
+            self.cards[i]=this.cardNumbers[i];
+        }
         self.dealer.dealCards(this.cardNumbers);
         let selectedCard = null;
 
@@ -119,7 +123,7 @@ export default class chooseCard extends Phaser.Scene {
             else {
                 console.log('My card: ' + selectedCard.texture.key);
                 self.socket.emit("gatherCards", selectedCard.texture.key, this.id);
-                self.scene.start("waitForCards", { server: self.socket, id: self.id, cardNumbers: cards, story: this.story, cardChoice: selectedCard.texture.key, isStoryteller: false});
+                self.scene.start("waitForCards", { server: self.socket, id: self.id, cardNumbers: self.cards, story: this.story, cardChoice: selectedCard.texture.key, isStoryteller: false});
             }
         });
 

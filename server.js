@@ -49,16 +49,13 @@ io.on('connection', function (socket) {
 
     socket.on('dealCards', function (id) {
         for (let i=0; i<playersId.length; i++) {
-            if(playersId[i]==id){
+            if(playersId[i] == id){
                 let cards=[];
                 for(let j=i*6; j<6*(i+1); j++){
-                    if(playersCards[j]=="")
-                        playersCards[j]==cardNumbers.pop();
                     cards.push(playersCards[j]);
                 }
                 io.to(playersId[i]).emit('dealCards', cards);
                 console.log("Sent cards"+ cards.length +": " + cards + " left cards " + cardNumbers.length);
-                playersCards[i*6] = cards;
             }
         }
     });
@@ -105,7 +102,7 @@ io.on('connection', function (socket) {
         // remove card from hand
         for(let i=0; i<playersCards.length; i++)
             if(card.includes(playersCards[i]))
-                playersCards[i]="";
+                playersCards[i] = cardNumbers.pop();
         for(let i=0; i<playersId.length; i++)
             if(playersId[i]==id)
                 gatheredCards[i]=card;
@@ -186,6 +183,14 @@ io.on('connection', function (socket) {
             storyleller = 0;
         else
             storyteller = storyteller + 1;
+
+        for (let i = 0; i < playersId.length; i++) {
+            if (i === storyteller) {
+                io.to(playersId[i]).emit("continueStoryteller");
+            }
+            else
+                io.to(playersId[i]).emit("continueNormalPlayer");
+        }
     });
 
     socket.on('disconnect', function () {
