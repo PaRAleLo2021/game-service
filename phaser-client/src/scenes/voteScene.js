@@ -129,7 +129,7 @@ export default class voteScene extends Phaser.Scene {
             console.log("GatheredCards " + gatheredCards);
             console.log("Votes " + cardVotes);
             self.scene.start("scoresScene", { server: self.socket, id: self.id,
-                 storytellerCard: storytellerCard, story: self.story, gatheredCards: gatheredCards, cardVotes: cardVotes});
+                 storytellerCard: storytellerCard, story: self.story, gatheredCards: gatheredCards, cardVotes: cardVotes, isStoryteller: self.isStoryteller});
         });
     }
 }

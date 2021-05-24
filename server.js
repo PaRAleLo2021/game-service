@@ -181,6 +181,13 @@ io.on('connection', function (socket) {
         io.to(socket.id).emit('printScores', playersUsername, scores);
     });
 
+    socket.on('continue', function() {
+        if (storyteller === playersId.length - 1)
+            storyleller = 0;
+        else
+            storyteller = storyteller + 1;
+    });
+
     socket.on('disconnect', function () {
         let i = playersId.indexOf(socket.id);
         console.log('User ' + i + ' disconnected: ' + socket.id);

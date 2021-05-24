@@ -14,7 +14,8 @@ export default class scoresScene extends Phaser.Scene {
         this.storytellerCard = data.storytellerCard;
         this.story = data.story;
         this.gatheredCards = data.gatheredCards;
-        this.cardVotes = data.cardVotes;        
+        this.cardVotes = data.cardVotes;
+        this.isStoryteller = data.isStoryteller;        
     }
 
     preload() {
@@ -74,6 +75,16 @@ export default class scoresScene extends Phaser.Scene {
         
         this.add.text(50, 480, 'This is the card of the storyteller.\nFor the story:', style);
         this.add.text(50, 595, '' + this.story, styleBold).setFontSize(40);
+
+        if (this.isStoryteller === true){
+            const buttonContinue = this.add.image(850,605, "button").setScale(0.5,0.5);
+            buttonContinue.setInteractive();
+
+            buttonContinue.on('pointerdown', () => {
+                console.log("Continue");
+                self.socket.emit("continue");
+            });
+        }
 
         
     }
