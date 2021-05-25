@@ -143,20 +143,8 @@ io.on('connection', function (socket) {
             console.log("StorytellerCard " + storytellerCard);
             console.log("GatheredCards " + gatheredCards);
             console.log("Votes " + cardVotes);
-            for (let i = 0; i < playersId.length; i++) {
-                io.to(playersId[i]).emit('voteResults', {storytellerCard: storytellerCard, gatheredCards: gatheredCards, cardVotes: cardVotes});
-            }
-            waiting = 0;
-            storytellerEmitedWaiting=false;
-        }
-    });
 
-    socket.on('sendScores', function() {
-        /*** Scoring Logic ***/
-        let votesSum = 0
-        for(let i=0; i<cardVotes.length; i++)
-            votesSum = votesSum+cardVotes[i];
-        if(votesSum>1){
+            /*** Scoring Logic ***/
             let storytellerVotes = cardVotes[storyteller];
             if(storytellerVotes===playersId.length-1||storytellerVotes===0){
                 for(let i=0; i<playersId.length; i++){
@@ -178,16 +166,26 @@ io.on('connection', function (socket) {
             for(let i=0; i < playersId.length; i++){
                 gatheredVotedCards[i] = "";
             }
-            for(let i=0; i < playersId.length; i++){
-                cardVotes[i] = 0;
+
+            for (let i = 0; i < playersId.length; i++) {
+                io.to(playersId[i]).emit('voteResults', {storytellerCard: storytellerCard, gatheredCards: gatheredCards, cardVotes: cardVotes});
             }
+            waiting = 0;
+            storytellerEmitedWaiting=false;
         }
+    });
+
+    socket.on('sendScores', function() {
         io.to(socket.id).emit('printScores', playersUsername, scores);
     });
 
     socket.on('continue', function() {
         let winners = [];
         let winnersId = [];
+
+        for(let i=0; i < playersId.length; i++){
+            cardVotes[i] = 0;
+        }
         
         for(let i = 0; i < playersId.length; i++) {
             if (scores[i] >= 30) {
