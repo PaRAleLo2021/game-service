@@ -65,7 +65,9 @@ export default class scoresScene extends Phaser.Scene {
         this.add.rectangle(170, 530, 320, 560,"0x3f51b5");
         let playerCard = new Card(self);
         playerCard.render(170, 250, this.storytellerCard, true).setTint().setScale(1.8, 1.8);
-        this.add.text(170, 430, "Votes "+this.cardVotes[0]+"/"+totalVotes, styleBlackBackground);
+        for(let i = 0; i<this.cardVotes.length; i++ )
+            if(this.gatheredCards[i]==this.storytellerCard)
+                this.add.text(170, 430, "Votes "+this.cardVotes[i]+"/"+totalVotes, styleBlackBackground);
 
         let ii=0; let jj=0;
         for (let j = 0; j < 2; j++)
