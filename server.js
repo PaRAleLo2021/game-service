@@ -186,6 +186,23 @@ io.on('connection', function (socket) {
     });
 
     socket.on('continue', function() {
+        let winners = [];
+        let winnersId = [];
+        
+        for(let i = 0; i < playersId.length; i++) {
+            if (scores[i] >= 30) {
+                winners.push(playersUsername[i]);
+                winnersId.push(playersId[i]);
+            }
+        }
+
+        if (winners.length >= 1) {
+            for (let i = 0; i < playersId.length; i++) {
+                io.to(playersId[i]).emit('endGame', winners, winnersId);
+            }
+        }
+        else {
+
         if (storyteller === playersId.length - 1)
             storyleller = 0;
         else
@@ -199,6 +216,7 @@ io.on('connection', function (socket) {
             }
             else
                 io.to(playersId[i]).emit("continueNormalPlayer");
+        }
         }
     });
 

@@ -103,5 +103,10 @@ export default class scoresScene extends Phaser.Scene {
         this.socket.on('continueStoryteller', function () {
             self.scene.start("WriteStory", { server: self.socket, id: self.id});        
         })
+
+        this.socket.on('endGame', function (winners, winnersId) {
+            console.log("ScoreScene: " + winners);
+            self.scene.start("endGame", {server: self.socket, id: self.id, winners: winners, winnersId: winnersId});        
+        })
     }
 }

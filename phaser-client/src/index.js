@@ -6,6 +6,7 @@ import waitForCards from "./scenes/waitForCards";
 import WriteStory from "./scenes/writeStory";
 import voteScene from "./scenes/voteScene";
 import scoresScene from "./scenes/scoresScene";
+import endGame from "./scenes/endGame";
 
 const config = {
     backgroundColor: '#f3cca3',
@@ -26,7 +27,8 @@ const config = {
         chooseCard, 
         waitForCards,
         voteScene,
-        scoresScene
+        scoresScene,
+        endGame
     ],
 };
 
