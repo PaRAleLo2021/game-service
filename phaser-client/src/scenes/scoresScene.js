@@ -23,6 +23,11 @@ export default class scoresScene extends Phaser.Scene {
     }
 
     create() {
+        this.scene.stop("writeStory");
+        this.scene.stop("waitForStory");
+        this.scene.stop("waitForCards");
+        this.scene.stop("voteScene");
+        this.scene.stop("chooseCard");
         /**   Game   **/
         let self = this;
         let totalVotes = 0;
@@ -62,13 +67,18 @@ export default class scoresScene extends Phaser.Scene {
         playerCard.render(170, 250, this.storytellerCard, true).setTint().setScale(1.8, 1.8);
         this.add.text(170, 430, "Votes "+this.cardVotes[0]+"/"+totalVotes, styleBlackBackground);
 
+        let ii=0; let jj=0;
         for (let j = 0; j < 2; j++)
             for (let i = 0; i < 2; i++) {
                 let playerCard = new Card(self);
-                if(this.gatheredCards.length > i + j*2 +1){
-                    if(this.gatheredCards[i + j*2+1]!=""){
-                        playerCard.render(445 + (i * 225), 230 + 340 * j, this.gatheredCards[i + j*2+1], true).setTint();
-                        this.add.text(405 + (i * 225), 345 + 340 * j, " Votes "+this.cardVotes[i + j*2+1]+"/"+totalVotes+" ", styleBlackBackground);
+                if(this.gatheredCards.length > i + j*2){
+                    if(this.gatheredCards[i + j*2]!=this.storytellerCard && this.gatheredCards[i + j*2]!=""){
+                        if(ii==2){
+                            ii=0; jj=1;
+                        }
+                        playerCard.render(445 + (ii * 225), 230 + 340 * jj, this.gatheredCards[i + j*2], true).setTint();
+                        this.add.text(405 + (ii * 225), 345 + 340 * jj, " Votes "+this.cardVotes[i + j*2]+"/"+totalVotes+" ", styleBlackBackground);
+                        ii++;
                     }
                 }
             }

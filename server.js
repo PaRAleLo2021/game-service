@@ -14,6 +14,7 @@ let waiting = 0;
 let storytellerCard;
 let cardVotes = [];
 let self = this;
+let storytellerEmitedWaiting = false;
 
 //initialize card numbers array
 let cardNumbers = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18",
@@ -131,8 +132,13 @@ io.on('connection', function (socket) {
         }
     });
 
-    socket.on('votedWaiting', function() {
-        waiting++;
+    socket.on('votedWaiting', function(id) {
+        if(!storytellerEmitedWaiting||id!=playersId[storyteller]){
+            if(id==playersId[storyteller])
+                storytellerEmitedWaiting=true;
+            waiting++;
+        }
+        console.log("Waiting " + waiting + " by " + id);
         if (waiting === playersId.length) {
             console.log("StorytellerCard " + storytellerCard);
             console.log("GatheredCards " + gatheredCards);
@@ -141,6 +147,7 @@ io.on('connection', function (socket) {
                 io.to(playersId[i]).emit('voteResults', {storytellerCard: storytellerCard, gatheredCards: gatheredCards, cardVotes: cardVotes});
             }
             waiting = 0;
+            storytellerEmitedWaiting=false;
         }
     });
 
@@ -183,6 +190,8 @@ io.on('connection', function (socket) {
             storyleller = 0;
         else
             storyteller = storyteller + 1;
+        
+        console.log("I am storyteller: "+playersId[storyteller]);
 
         for (let i = 0; i < playersId.length; i++) {
             if (i === storyteller) {

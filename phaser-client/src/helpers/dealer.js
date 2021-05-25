@@ -7,7 +7,7 @@ export default class Dealer {
             console.log("Printed cardNumbers - " + cardNumbers.length + " : " + cardNumbers);
             for (let j = 0; j < 2; j++)
             for (let i = 0; i < 3; i++) {
-                let number = cardNumbers.pop();
+                let number = cardNumbers[i+j*3];
                 let playerCard = new Card(scene);
                 playerCard.render(150 + (i * 225), 230 + 340 * j, 'card_' + number, true);
             }

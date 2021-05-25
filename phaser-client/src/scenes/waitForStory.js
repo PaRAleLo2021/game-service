@@ -82,6 +82,7 @@ export default class waitForStory extends Phaser.Scene {
             }
             self.dealer.dealCards(self.cardNumbers);      
         })
+        console.log("This are the cards in WaitForStory"+self.cards);
 
         /**  Score printing  **/
         this.socket.emit("sendScores");

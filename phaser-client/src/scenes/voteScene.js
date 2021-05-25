@@ -22,6 +22,7 @@ export default class voteScene extends Phaser.Scene {
     }
 
     create() {
+        this.scene.stop("scoreScene");
         /**   Game   **/
         let self = this;
         let selectedCard = null;
@@ -35,7 +36,7 @@ export default class voteScene extends Phaser.Scene {
 
         for (let j = 0; j < 2; j++)
             for (let i = 0; i < 2; i++) {
-                let number = this.cardNumbers.pop();
+                let number = this.cardNumbers[i + j*2];
                 if(number!=""){
                     let playerCard = new Card(self);
                     playerCard.render(150 + (i * 225), 230 + 340 * j, number, true);
@@ -95,7 +96,8 @@ export default class voteScene extends Phaser.Scene {
             buttonSubmitCard.disableInteractive();
             textVote.setVisible(false);
             textWait.setVisible(true);
-            self.socket.emit("votedWaiting");
+            console.log("Emited voted waiting by Storyteller");
+            self.socket.emit("votedWaiting",self.id);
         }
 
         buttonSubmitCard.on('pointerdown', () => {
@@ -107,7 +109,6 @@ export default class voteScene extends Phaser.Scene {
                 this.errorMissingCard.setVisible(false);
                 this.errorNotYourCard.setVisible(true);
             }
-
             else {
                 console.log('My card: ' + selectedCard.texture.key);
                 buttonSubmitCard.setVisible(false);
@@ -117,7 +118,9 @@ export default class voteScene extends Phaser.Scene {
                 textVote.setVisible(false);
                 textWait.setVisible(true);
                 self.socket.emit("gatherVotedCards", selectedCard.texture.key, this.id);
-                self.socket.emit("votedWaiting");
+                if(!this.isStoryteller){
+                console.log("Emited voted waiting");
+                self.socket.emit("votedWaiting",self.id);}
             }
         });
 

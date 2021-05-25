@@ -68,6 +68,7 @@ export default class chooseCard extends Phaser.Scene {
             self.cards[i]=this.cardNumbers[i];
         }
         self.dealer.dealCards(this.cardNumbers);
+        console.log("This are the cards in ChooseCard"+self.cards);
         let selectedCard = null;
 
         var style = { 
