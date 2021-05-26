@@ -68,7 +68,7 @@ export default class WriteStory extends Phaser.Scene {
     create() {
         /**   Game   **/
 
-        this.socket.emit("sendRound", self.gameId);
+        this.socket.emit("sendRound", this.gameId);
         this.socket.once('saveRound', function (r) {
             round = r; 
             console.log(" ");

@@ -82,12 +82,14 @@ io.on('connection', function (socket) {
         if (game.playersId.length >= 3) {
             io.to(game.playersId[0]).emit('enableStartButton');
         }
+        gameDB.set(gameId, game);
     });
 
 
     socket.on('saveUsername', function (gameId, username) {
         let game = gameDB.get(gameId);
         game.playersUsername.push(username);
+        gameDB.set(gameId, game);
     });
 
     socket.on('dealCards', function (gameId, id) {
@@ -102,6 +104,7 @@ io.on('connection', function (socket) {
                 //console.log("Sent cards"+ cards.length +": " + cards + " left cards " + cardNumbers.length);
             }
         }
+        gameDB.set(gameId, game);
     });
 
     socket.on('startGame', function(gameId, id) {
@@ -128,6 +131,7 @@ io.on('connection', function (socket) {
         }
         console.log("All cards added "+ game.playersCards);
         console.log("Cards left: "+ game.cardNumbers.length);
+        gameDB.set(gameId, game);
     });
 
     socket.on('submitStory', function(gameId, story, id) {
@@ -138,6 +142,7 @@ io.on('connection', function (socket) {
                 io.to(game.playersId[i]).emit('submittedStory', story);
             }
         }
+        gameDB.set(gameId, game);
     });
 
     socket.on('gatherCards', function(gameId, card, id) {
@@ -149,6 +154,7 @@ io.on('connection', function (socket) {
         for(let i=0; i<game.playersId.length; i++)
             if(game.playersId[i]==id)
                 game.gatheredCards[i]=card;
+        gameDB.set(gameId, game);
     });
 
     socket.on('gatherVotedCards', function(gameId, card, id) {
@@ -159,11 +165,13 @@ io.on('connection', function (socket) {
             if(game.gatheredCards[i] === card)
                 game.cardVotes[i]++;
         }
+        gameDB.set(gameId, game);
     });
 
     socket.on('storytellerCard', function(gameId, card) {
         let game = gameDB.get(gameId);
         game.storytellerCard = card;
+        gameDB.set(gameId, game);
     });
 
     socket.on('waiting', function(gameId) {
@@ -175,6 +183,7 @@ io.on('connection', function (socket) {
             }
             game.waiting = 0;
         }
+        gameDB.set(gameId, game);
     });
 
     socket.on('votedWaiting', function(gameId, id) {
@@ -196,7 +205,7 @@ io.on('connection', function (socket) {
                 for(let i=0; i<game.playersId.length; i++){
                     game.scores[i]=game.scores[i]+2;
                 }
-                game.scores[storyteller]=game.scores[game.storyteller]-2;
+                game.scores[game.storyteller]=game.scores[game.storyteller]-2;
             }
             else{
                 for(let i=0; i<game.playersId.length; i++){
@@ -219,16 +228,19 @@ io.on('connection', function (socket) {
             game.waiting = 0;
             game.storytellerEmitedWaiting=false;
         }
+        gameDB.set(gameId, game);
     });
 
     socket.on('sendScores', function(gameId) {
         let game = gameDB.get(gameId);
         io.to(socket.id).emit('printScores', game.playersUsername, game.scores);
+        gameDB.set(gameId, game);
     });
 
     socket.on('sendRound', function(gameId) {
         let game = gameDB.get(gameId);
         io.to(socket.id).emit('saveRound', game.round);
+        gameDB.set(gameId, game);
     });
 
     socket.on('continue', function(gameId) {
@@ -270,6 +282,7 @@ io.on('connection', function (socket) {
                     io.to(game.playersId[i]).emit("continueNormalPlayer");
             }
         }
+        gameDB.set(gameId, game);
     });
 
     socket.on('disconnect', function (gameId) {
@@ -279,6 +292,7 @@ io.on('connection', function (socket) {
 
         game.playersId = game.playersId.filter(player => player !== socket.id);
         game.scores.pop(i);
+        gameDB.set(gameId, game);
     });
 });
 

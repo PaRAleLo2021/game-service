@@ -71,8 +71,9 @@ export default class waitForStory extends Phaser.Scene {
     create() {
         /**   Game   **/
         let round;
-
-        this.socket.emit("sendRound", self.gameId);
+        let self = this;
+        console.log("This gameID "+this.gameId);
+        this.socket.emit("sendRound", this.gameId);
         this.socket.once('saveRound', function (r) {
             round = r; 
             console.log(" ");
@@ -80,9 +81,9 @@ export default class waitForStory extends Phaser.Scene {
         })
 
         this.dealer = new Dealer(this);
-        let self = this;
+        
 
-        self.socket.emit("dealCards", self.gameId, this.id);
+        this.socket.emit("dealCards", this.gameId, this.id);
         this.socket.once('dealCards', function (c) {
             console.log("Printed cardNumbers - " + c.length + " : " + c);
             for(let i=0; i<c.length; i++){
