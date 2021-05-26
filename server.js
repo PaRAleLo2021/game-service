@@ -258,6 +258,22 @@ io.on('connection', function (socket) {
 
     socket.on('disconnect', function () {
         console.log('User disconnected: ' + socket.id);
+        let gameid;
+        let values;
+        let i;
+        for ([gameid, values] of gameDB) {
+            if (values.playersId.includes(socket.id)) { 
+                i = values.playersId.indexOf(socket.id);
+                break;
+            }
+        }  
+        gameDB.get(gameid).playersId.pop(i);
+        gameDB.get(gameid).scores.pop(i);
+        gameDB.get(gameid).playersUsername.pop(i);
+
+        if (gameDB.get(gameid).playersId.length === 0) {
+            gameDB.delete(gameid);
+        }
     });
 });
 
