@@ -76,7 +76,7 @@ io.on('connection', function (socket) {
         game.scores.push(0);    
     
         if (game.playersId.length === 1) {
-            io.emit('isPlayerA');
+            io.to(game.playersId[0]).emit('isPlayerA');
         };
     
         if (game.playersId.length >= 3) {
