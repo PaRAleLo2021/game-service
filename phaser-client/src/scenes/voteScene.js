@@ -18,7 +18,7 @@ export default class voteScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('button','src/assets/button-start-game.png');
+        this.load.image('button-vote','src/assets/button-vote.png');
     }
 
     create() {
@@ -63,7 +63,7 @@ export default class voteScene extends Phaser.Scene {
         this.errorNotYourCard = this.add.text(750, 200, 'You can\'t vote for your own card!', styleWarning).setVisible(false);
 
         this.input.on('gameobjectdown', function (pointer, gameObject) {
-            if(gameObject.texture.key!='button'){
+            if(gameObject.texture.key!='button-vote'){
                 if(selectedCard != null){
                     selectedCard.setTint(0x7885cb);
                     selectedCard.setScale(1.3, 1.3);
@@ -75,30 +75,30 @@ export default class voteScene extends Phaser.Scene {
         })
 
         this.input.on('gameobjectover', function (pointer, gameObject) {
-            if(gameObject.texture.key!='button'){
+            if(gameObject.texture.key!='button-vote'){
                 gameObject.setScale(1.8, 1.8);
             }
         })
 
         this.input.on('gameobjectout', function (pointer, gameObject) {
-            if(gameObject.texture.key!='button'){
+            if(gameObject.texture.key!='button-vote'){
                 gameObject.setScale(1.3, 1.3);
             }
         })
 
-        const buttonSubmitCard = this.add.image(850,605, "button").setScale(0.5,0.5);
-        buttonSubmitCard.setInteractive();
+        const buttonVote = this.add.image(850,605, "button-vote").setScale(0.5,0.5);
+        buttonVote.setInteractive();
 
         if(self.isStoryteller){
-            buttonSubmitCard.setVisible(false);
-            buttonSubmitCard.disableInteractive();
+            buttonVote.setVisible(false);
+            buttonVote.disableInteractive();
             textVote.setVisible(false);
             textWait.setVisible(true);
             //console.log("Emited voted waiting by Storyteller");
             self.socket.emit("votedWaiting",self.id);
         }
 
-        buttonSubmitCard.on('pointerdown', () => {
+        buttonVote.on('pointerdown', () => {
             if (selectedCard == null) {
                 this.errorNotYourCard.setVisible(false);
                 this.errorMissingCard.setVisible(true);
@@ -109,8 +109,8 @@ export default class voteScene extends Phaser.Scene {
             }
             else {
                 console.log('My card: ' + selectedCard.texture.key);
-                buttonSubmitCard.setVisible(false);
-                buttonSubmitCard.disableInteractive();
+                buttonVote.setVisible(false);
+                buttonVote.disableInteractive();
                 this.errorMissingCard.setVisible(false);
                 this.errorNotYourCard.setVisible(false);
                 textVote.setVisible(false);

@@ -18,7 +18,7 @@ export default class chooseCard extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('button','src/assets/button-start-game.png');
+        this.load.image('button-submit-card','src/assets/button-submit-card.png');
 
         /**   Cards   **/
         this.load.image('card_00', 'src/assets/card-0.png');
@@ -91,7 +91,7 @@ export default class chooseCard extends Phaser.Scene {
         this.errorMissingCard = this.add.text(750, 200, 'Please choose a Card!', styleWarning).setVisible(false);
 
         this.input.on('gameobjectdown', function (pointer, gameObject) {
-            if(gameObject.texture.key!='button'){
+            if(gameObject.texture.key!='button-submit-card'){
                 if(selectedCard != null){
                     selectedCard.setTint(0x7885cb);
                     selectedCard.setScale(1.3, 1.3);
@@ -103,26 +103,26 @@ export default class chooseCard extends Phaser.Scene {
         })
 
         this.input.on('gameobjectover', function (pointer, gameObject) {
-            if(gameObject.texture.key!='button'){
+            if(gameObject.texture.key!='button-submit-card'){
                 gameObject.setScale(1.8, 1.8);
             }
         })
 
         this.input.on('gameobjectout', function (pointer, gameObject) {
-            if(gameObject.texture.key!='button'){
+            if(gameObject.texture.key!='button-submit-card'){
                 gameObject.setScale(1.3, 1.3);
             }
         })
 
-        const buttonSubmitStory = this.add.image(850,605, "button").setScale(0.5,0.5);
-        buttonSubmitStory.setInteractive();
-        buttonSubmitStory.on('pointerdown', () => {
+        const buttonSubmitCard = this.add.image(850,605, "button-submit-card").setScale(0.5,0.5);
+        buttonSubmitCard.setInteractive();
+        buttonSubmitCard.on('pointerdown', () => {
             if (selectedCard == null) {
                 this.errorMissingCard.setVisible(true);
             }
 
             else {
-                buttonSubmitStory.disableInteractive();
+                buttonSubmitCard.disableInteractive();
                 //console.log('My card: ' + selectedCard.texture.key);
                 self.socket.emit("gatherCards", selectedCard.texture.key, this.id);
 

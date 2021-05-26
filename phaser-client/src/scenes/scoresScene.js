@@ -19,7 +19,7 @@ export default class scoresScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('button','src/assets/button-start-game.png');
+        this.load.image('button-continue','src/assets/button-continue.png');
     }
 
     create() {
@@ -84,7 +84,7 @@ export default class scoresScene extends Phaser.Scene {
         this.add.text(50, 595, '' + this.story, styleBold).setFontSize(40);
 
         if (this.isStoryteller === true){
-            const buttonContinue = this.add.image(850,605, "button").setScale(0.5,0.5);
+            const buttonContinue = this.add.image(850,605, "button-continue").setScale(0.5,0.5);
             buttonContinue.setInteractive();
 
             buttonContinue.once('pointerdown', () => {

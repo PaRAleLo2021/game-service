@@ -22,7 +22,7 @@ export default class WriteStory extends Phaser.Scene {
         /**  Story form   **/
         this.load.html("storyform", "src/assets/storyform.html");
 
-        this.load.image('button','src/assets/button-start-game.png');
+        this.load.image('button-submit-story','src/assets/button-submit-story.png');
 
         /**   Cards   **/
         this.load.image('card_00', 'src/assets/card-0.png');
@@ -111,7 +111,7 @@ export default class WriteStory extends Phaser.Scene {
         this.text = this.add.text(750, 300, "Choose a card and write your story!", style);
 
         this.input.on('gameobjectdown', function (pointer, gameObject) {
-            if(gameObject.texture.key!='button'){
+            if(gameObject.texture.key!='button-submit-story'){
                 if(selectedCard != null){
                     selectedCard.setTint(0x7885cb);
                     selectedCard.setScale(1.3, 1.3);
@@ -123,13 +123,13 @@ export default class WriteStory extends Phaser.Scene {
         })
 
         this.input.on('gameobjectover', function (pointer, gameObject) {
-            if(gameObject.texture.key!='button'){
+            if(gameObject.texture.key!='button-submit-story'){
                 gameObject.setScale(1.8, 1.8);
             }
         })
 
         this.input.on('gameobjectout', function (pointer, gameObject) {
-            if(gameObject.texture.key!='button'){
+            if(gameObject.texture.key!='button-submit-story'){
                 gameObject.setScale(1.3, 1.3);
             }
         })
@@ -139,7 +139,7 @@ export default class WriteStory extends Phaser.Scene {
         this.errorMissingCardAndStory = this.add.text(750, 200, 'Please choose a Card and write a Story!', styleWarning).setVisible(false);
         this.storyInput = this.add.dom(850, 500).createFromCache("storyform").setOrigin(0.5);
 
-        const buttonSubmitStory = this.add.image(850,605, "button").setScale(0.5,0.5);
+        const buttonSubmitStory = this.add.image(850,605, "button-submit-story").setScale(0.5,0.5);
         buttonSubmitStory.setInteractive();
         buttonSubmitStory.on('pointerdown', () => {
             let storybox = this.storyInput.getChildByName("story");

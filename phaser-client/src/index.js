@@ -18,7 +18,7 @@ var scoresScene = new ScoresScene();
 var endGame = new EndGame();
 
 const config = {
-    backgroundColor: '#f3cca3',
+    backgroundColor: '#ffffff',
     scale: {
         parent: 'phaser-example',
         mode: Phaser.Scale.FIT,
