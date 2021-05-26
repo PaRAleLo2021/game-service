@@ -188,7 +188,7 @@ io.on('connection', function (socket) {
         }
         
         for(let i = 0; i < playersId.length; i++) {
-            if (scores[i] >= 30) {
+            if (scores[i] >= 10) {
                 winners.push(playersUsername[i]);
                 winnersId.push(playersId[i]);
             }
