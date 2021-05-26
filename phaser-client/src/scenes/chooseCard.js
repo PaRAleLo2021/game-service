@@ -9,6 +9,7 @@ export default class chooseCard extends Phaser.Scene {
 
     init(data){
         /**   Game   **/
+        this.gameId = data.gameId;
         this.socket = data.server;
         this.id = data.id;
         this.cardNumbers = data.cardNumbers;
@@ -124,14 +125,14 @@ export default class chooseCard extends Phaser.Scene {
             else {
                 buttonSubmitCard.disableInteractive();
                 //console.log('My card: ' + selectedCard.texture.key);
-                self.socket.emit("gatherCards", selectedCard.texture.key, this.id);
+                self.socket.emit("gatherCards", self.gameId, selectedCard.texture.key, this.id);
 
                 if (self.scene.isActive("WaitForCards")) { 
                     self.scene.stop("WaitForCards");
-                    self.scene.start("WaitForCards", { server: self.socket, id: self.id, cardNumbers: self.cards, story: this.story, cardChoice: selectedCard.texture.key, isStoryteller: false});
+                    self.scene.start("WaitForCards", {gameId: self.gameId, server: self.socket, id: self.id, cardNumbers: self.cards, story: this.story, cardChoice: selectedCard.texture.key, isStoryteller: false});
                 }
                 else
-                    self.scene.start("WaitForCards", { server: self.socket, id: self.id, cardNumbers: self.cards, story: this.story, cardChoice: selectedCard.texture.key, isStoryteller: false});
+                    self.scene.start("WaitForCards", {gameId: self.gameId, server: self.socket, id: self.id, cardNumbers: self.cards, story: this.story, cardChoice: selectedCard.texture.key, isStoryteller: false});
             }
         });
 

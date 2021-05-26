@@ -9,6 +9,7 @@ export default class waitForCards extends Phaser.Scene {
 
     init(data){
         /**   Game   **/
+        this.gameId = data.gameId;
         this.socket = data.server;
         this.id = data.id;
         this.cardNumbers = data.cardNumbers;
@@ -37,7 +38,7 @@ export default class waitForCards extends Phaser.Scene {
         this.add.text(750, 300, 'Wait for all players to choose a card for this story', style);
         this.add.text(750, 450, 'The story: ' + this.story, style).setFontSize(40);
 
-        self.socket.emit("waiting");
+        self.socket.emit("waiting", self.gameId);
 
         for (let j = 0; j < 2; j++) {
             for (let i = 0; i < 2; i++) {
@@ -52,10 +53,10 @@ export default class waitForCards extends Phaser.Scene {
         this.socket.once('cardResults', function (cards) {
             if (self.scene.isActive("VoteScene")) { 
                 self.scene.stop("VoteScene");
-                self.scene.start("VoteScene", { server: self.socket, id: self.id, cardNumbers: cards, story: self.story, cardChoice: self.cardChoice, isStoryteller: self.isStoryteller});
+                self.scene.start("VoteScene", {gameId: self.gameId, server: self.socket, id: self.id, cardNumbers: cards, story: self.story, cardChoice: self.cardChoice, isStoryteller: self.isStoryteller});
             }
             else
-                self.scene.start("VoteScene", { server: self.socket, id: self.id, cardNumbers: cards, story: self.story, cardChoice: self.cardChoice, isStoryteller: self.isStoryteller});
+                self.scene.start("VoteScene", {gameId: self.gameId, server: self.socket, id: self.id, cardNumbers: cards, story: self.story, cardChoice: self.cardChoice, isStoryteller: self.isStoryteller});
         });
     }
 

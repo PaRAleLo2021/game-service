@@ -83,7 +83,7 @@ export default class StartGame extends Phaser.Scene {
 
         buttonStartGame.on('pointerdown', () => {
             self.socket.emit("startGame", this.gameid, id);
-            self.scene.launch("WriteStory", { gameid: this.gameid, server: self.socket, id: id});
+            self.scene.launch("WriteStory", {gameId: this.gameid, server: self.socket, id: id});
 
             waitForCreatorText.setVisible(false);
             waitForMorePlayersText.setVisible(false);
@@ -93,7 +93,7 @@ export default class StartGame extends Phaser.Scene {
         });
 
         this.socket.on('startGame', function () {
-            self.scene.launch("WaitForStory", { gameid: this.gameid, server: self.socket, id: id});
+            self.scene.launch("WaitForStory", { gameId: this.gameid, server: self.socket, id: id});
             waitForCreatorText.setVisible(false);
             waitForMorePlayersText.setVisible(false);
             canStartNowText.setVisible(false);

@@ -15,6 +15,7 @@ export default class waitForStory extends Phaser.Scene {
         this.chatMessages = [];
 
         /**   Game   **/
+        this.gameId = data.gameId;
         this.socket = data.server;
         this.id = data.id;
         this.cardNumbers = [];
@@ -71,7 +72,7 @@ export default class waitForStory extends Phaser.Scene {
         /**   Game   **/
         let round;
 
-        this.socket.emit("sendRound");
+        this.socket.emit("sendRound", self.gameId);
         this.socket.once('saveRound', function (r) {
             round = r; 
             console.log(" ");
@@ -81,7 +82,7 @@ export default class waitForStory extends Phaser.Scene {
         this.dealer = new Dealer(this);
         let self = this;
 
-        self.socket.emit("dealCards",this.id);
+        self.socket.emit("dealCards", self.gameId, this.id);
         this.socket.once('dealCards', function (c) {
             console.log("Printed cardNumbers - " + c.length + " : " + c);
             for(let i=0; i<c.length; i++){
@@ -92,7 +93,7 @@ export default class waitForStory extends Phaser.Scene {
         })
 
         /**  Score printing  **/
-        this.socket.emit("sendScores");
+        this.socket.emit("sendScores", self.gameId);
 
         var style = { 
             fontSize: 34,
@@ -116,10 +117,10 @@ export default class waitForStory extends Phaser.Scene {
 
             if (self.scene.isActive("ChooseCard")) { 
                 self.scene.stop("ChooseCard");
-                self.scene.start("ChooseCard", { server: self.socket, id: self.id, cardNumbers: self.cards, story: story});
+                self.scene.start("ChooseCard", {gameId: self.gameId, server: self.socket, id: self.id, cardNumbers: self.cards, story: story});
             }
             else
-                self.scene.start("ChooseCard", { server: self.socket, id: self.id, cardNumbers: self.cards, story: story});            
+                self.scene.start("ChooseCard", {gameId: self.gameId, server: self.socket, id: self.id, cardNumbers: self.cards, story: story});            
         })
 
     }
