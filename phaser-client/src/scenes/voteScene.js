@@ -9,6 +9,7 @@ export default class voteScene extends Phaser.Scene {
 
     init(data){
         /**   Game   **/
+        this.gameId = data.gameId;
         this.socket = data.server;
         this.id = data.id;
         this.cardNumbers = data.cardNumbers;
@@ -94,8 +95,7 @@ export default class voteScene extends Phaser.Scene {
             buttonVote.disableInteractive();
             textVote.setVisible(false);
             textWait.setVisible(true);
-            //console.log("Emited voted waiting by Storyteller");
-            self.socket.emit("votedWaiting",self.id);
+            self.socket.emit("votedWaiting", self.gameId, self.id);
         }
 
         buttonVote.on('pointerdown', () => {
@@ -115,10 +115,9 @@ export default class voteScene extends Phaser.Scene {
                 this.errorNotYourCard.setVisible(false);
                 textVote.setVisible(false);
                 textWait.setVisible(true);
-                self.socket.emit("gatherVotedCards", selectedCard.texture.key, this.id);
+                self.socket.emit("gatherVotedCards", self.gameId, selectedCard.texture.key, this.id);
                 if(!this.isStoryteller) {
-                    //console.log("Emited voted waiting");
-                    self.socket.emit("votedWaiting",self.id);
+                    self.socket.emit("votedWaiting", self.gameId, self.id);
                 }
             }
         });
@@ -130,10 +129,10 @@ export default class voteScene extends Phaser.Scene {
 
             if (self.scene.isActive("ScoreScene")) { 
                 self.scene.stop("ScoreScene");
-                self.scene.start("ScoresScene", { server: self.socket, id: self.id, storytellerCard: storytellerCard, story: self.story, gatheredCards: gatheredCards, cardVotes: cardVotes, isStoryteller: self.isStoryteller});
+                self.scene.start("ScoresScene", {gameId: self.gameId, server: self.socket, id: self.id, storytellerCard: storytellerCard, story: self.story, gatheredCards: gatheredCards, cardVotes: cardVotes, isStoryteller: self.isStoryteller});
             }
             else
-                self.scene.start("ScoresScene", { server: self.socket, id: self.id, storytellerCard: storytellerCard, story: self.story, gatheredCards: gatheredCards, cardVotes: cardVotes, isStoryteller: self.isStoryteller});      
+                self.scene.start("ScoresScene", {gameId: self.gameId, server: self.socket, id: self.id, storytellerCard: storytellerCard, story: self.story, gatheredCards: gatheredCards, cardVotes: cardVotes, isStoryteller: self.isStoryteller});      
         });
     }
 }

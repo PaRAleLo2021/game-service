@@ -14,6 +14,7 @@ export default class endGame extends Phaser.Scene {
         this.chatMessages = [];
 
         /**   Game   **/
+        this.gameId = data.gameId;
         this.socket = data.server;
         this.id = data.id;
         this.winners = data.winners;
@@ -30,7 +31,7 @@ export default class endGame extends Phaser.Scene {
         let self = this;
 
         /**  Score printing  **/
-        this.socket.emit("sendScores");
+        this.socket.emit("sendScores", self.gameId);
 
         var style = { 
             fontSize: 34,

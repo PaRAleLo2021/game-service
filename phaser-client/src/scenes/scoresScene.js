@@ -9,6 +9,7 @@ export default class scoresScene extends Phaser.Scene {
 
     init(data){
         /**   Game   **/
+        this.gameId = data.gameId;
         this.socket = data.server;
         this.id = data.id;
         this.storytellerCard = data.storytellerCard;
@@ -27,7 +28,7 @@ export default class scoresScene extends Phaser.Scene {
         let self = this;
         let totalVotes = 0;
 
-        this.socket.emit("sendScores");
+        this.socket.emit("sendScores", self.gameId);
 
         var style = { 
             fontSize: 32,
@@ -90,29 +91,29 @@ export default class scoresScene extends Phaser.Scene {
             buttonContinue.once('pointerdown', () => {
                 buttonContinue.disableInteractive();
                 console.log("Continue");
-                self.socket.emit("continue");
+                self.socket.emit("continue", self.gameId);
             });
         }
 
         this.socket.once('continueNormalPlayer', function () {
             if (self.scene.isActive("WaitForStory")) { 
                 self.scene.stop("WaitForStory");
-                self.scene.start("WaitForStory", { server: self.socket, id: self.id});            }
+                self.scene.start("WaitForStory", {gameId: self.gameId, server: self.socket, id: self.id});            }
             else
-                self.scene.start("WaitForStory", { server: self.socket, id: self.id});            
+                self.scene.start("WaitForStory", {gameId: self.gameId, server: self.socket, id: self.id});            
         })
 
         this.socket.once('continueStoryteller', function () {
             if (self.scene.isActive("WriteStory")) { 
                 self.scene.stop("WriteStory");
-                self.scene.start("WriteStory", { server: self.socket, id: self.id});            }
+                self.scene.start("WriteStory", {gameId: self.gameId, server: self.socket, id: self.id});            }
             else
-                self.scene.start("WriteStory", { server: self.socket, id: self.id});                    
+                self.scene.start("WriteStory", {gameId: self.gameId, server: self.socket, id: self.id});                    
         })
 
         this.socket.once('endGame', function (winners, winnersId) {
             console.log("ScoreScene: " + winners);
-            self.scene.start("EndGame", {server: self.socket, id: self.id, winners: winners, winnersId: winnersId});        
+            self.scene.start("EndGame", {gameId = self.gameId, server: self.socket, id: self.id, winners: winners, winnersId: winnersId});        
         })
     }
 }
