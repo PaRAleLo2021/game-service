@@ -95,11 +95,11 @@ export default class scoresScene extends Phaser.Scene {
         }
 
         this.socket.once('continueNormalPlayer', function () {
-            if (self.scene.isActive("waitForStory")) { 
-                self.scene.stop("waitForStory");
-                self.scene.start("waitForStory", { server: self.socket, id: self.id});            }
+            if (self.scene.isActive("WaitForStory")) { 
+                self.scene.stop("WaitForStory");
+                self.scene.start("WaitForStory", { server: self.socket, id: self.id});            }
             else
-                self.scene.start("waitForStory", { server: self.socket, id: self.id});            
+                self.scene.start("WaitForStory", { server: self.socket, id: self.id});            
         })
 
         this.socket.once('continueStoryteller', function () {

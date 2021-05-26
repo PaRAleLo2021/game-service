@@ -128,12 +128,12 @@ export default class voteScene extends Phaser.Scene {
             let gatheredCards = data.gatheredCards;
             let cardVotes = data.cardVotes;
 
-            if (self.scene.isActive("scoreScene")) { 
-                self.scene.stop("scoreScene");
-                self.scene.start("scoresScene", { server: self.socket, id: self.id, storytellerCard: storytellerCard, story: self.story, gatheredCards: gatheredCards, cardVotes: cardVotes, isStoryteller: self.isStoryteller});
+            if (self.scene.isActive("ScoreScene")) { 
+                self.scene.stop("ScoreScene");
+                self.scene.start("ScoresScene", { server: self.socket, id: self.id, storytellerCard: storytellerCard, story: self.story, gatheredCards: gatheredCards, cardVotes: cardVotes, isStoryteller: self.isStoryteller});
             }
             else
-                self.scene.start("scoresScene", { server: self.socket, id: self.id, storytellerCard: storytellerCard, story: self.story, gatheredCards: gatheredCards, cardVotes: cardVotes, isStoryteller: self.isStoryteller});      
+                self.scene.start("ScoresScene", { server: self.socket, id: self.id, storytellerCard: storytellerCard, story: self.story, gatheredCards: gatheredCards, cardVotes: cardVotes, isStoryteller: self.isStoryteller});      
         });
     }
 }

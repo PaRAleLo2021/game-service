@@ -114,12 +114,12 @@ export default class waitForStory extends Phaser.Scene {
         this.socket.once('submittedStory', function (story) {
             //console.log("Received story! " + story);
 
-            if (self.scene.isActive("chooseCard")) { 
-                self.scene.stop("chooseCard");
-                self.scene.start("chooseCard", { server: self.socket, id: self.id, cardNumbers: self.cards, story: story});
+            if (self.scene.isActive("ChooseCard")) { 
+                self.scene.stop("ChooseCard");
+                self.scene.start("ChooseCard", { server: self.socket, id: self.id, cardNumbers: self.cards, story: story});
             }
             else
-                self.scene.start("chooseCard", { server: self.socket, id: self.id, cardNumbers: self.cards, story: story});            
+                self.scene.start("ChooseCard", { server: self.socket, id: self.id, cardNumbers: self.cards, story: story});            
         })
 
     }

@@ -126,12 +126,12 @@ export default class chooseCard extends Phaser.Scene {
                 //console.log('My card: ' + selectedCard.texture.key);
                 self.socket.emit("gatherCards", selectedCard.texture.key, this.id);
 
-                if (self.scene.isActive("waitForCards")) { 
-                    self.scene.stop("waitForCards");
-                    self.scene.start("waitForCards", { server: self.socket, id: self.id, cardNumbers: self.cards, story: this.story, cardChoice: selectedCard.texture.key, isStoryteller: false});
+                if (self.scene.isActive("WaitForCards")) { 
+                    self.scene.stop("WaitForCards");
+                    self.scene.start("WaitForCards", { server: self.socket, id: self.id, cardNumbers: self.cards, story: this.story, cardChoice: selectedCard.texture.key, isStoryteller: false});
                 }
                 else
-                    self.scene.start("waitForCards", { server: self.socket, id: self.id, cardNumbers: self.cards, story: this.story, cardChoice: selectedCard.texture.key, isStoryteller: false});
+                    self.scene.start("WaitForCards", { server: self.socket, id: self.id, cardNumbers: self.cards, story: this.story, cardChoice: selectedCard.texture.key, isStoryteller: false});
             }
         });
 
