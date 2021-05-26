@@ -3,7 +3,7 @@ import Dealer from "../helpers/dealer";
 export default class chooseCard extends Phaser.Scene {
     constructor() {
         super({
-            key: 'chooseCard'
+            key: 'ChooseCard'
         });
     }
 
@@ -124,7 +124,7 @@ export default class chooseCard extends Phaser.Scene {
             else {
                 console.log('My card: ' + selectedCard.texture.key);
                 self.socket.emit("gatherCards", selectedCard.texture.key, this.id);
-                self.scene.start("waitForCards", { server: self.socket, id: self.id, cardNumbers: self.cards, story: this.story, cardChoice: selectedCard.texture.key, isStoryteller: false});
+                self.scene.start("WaitForCards", { server: self.socket, id: self.id, cardNumbers: self.cards, story: this.story, cardChoice: selectedCard.texture.key, isStoryteller: false});
             }
         });
 

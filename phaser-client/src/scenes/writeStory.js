@@ -148,7 +148,7 @@ export default class WriteStory extends Phaser.Scene {
                 self.socket.emit("submitStory", storybox.value, self.id);
                 self.socket.emit("storytellerCard", selectedCard.texture.key);
                 self.socket.emit("gatherCards", selectedCard.texture.key, this.id);
-                self.scene.start("waitForCards", { server: self.socket, id: self.id, cardNumbers: self.cards, story: storybox.value, cardChoice: selectedCard.texture.key, isStoryteller: true});
+                self.scene.start("WaitForCards", { server: self.socket, id: self.id, cardNumbers: self.cards, story: storybox.value, cardChoice: selectedCard.texture.key, isStoryteller: true});
                 storybox.value = "";
             }
         });

@@ -3,7 +3,7 @@ import io from 'socket.io-client';
 export default class endGame extends Phaser.Scene {
     constructor() {
         super({
-            key: 'endGame'
+            key: 'EndGame'
         });
     }
 

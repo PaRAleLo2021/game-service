@@ -4,7 +4,7 @@ import Dealer from "../helpers/dealer";
 export default class waitForStory extends Phaser.Scene {
     constructor() {
         super({
-            key: 'waitForStory'
+            key: 'WaitForStory'
         });
     }
 
@@ -108,7 +108,7 @@ export default class waitForStory extends Phaser.Scene {
 
         this.socket.on('submittedStory', function (story) {
             console.log("Received story! " + story);
-            self.scene.start("chooseCard", { server: self.socket, id: self.id, cardNumbers: self.cards, story: story});
+            self.scene.start("ChooseCard", { server: self.socket, id: self.id, cardNumbers: self.cards, story: story});
         })
 
     }

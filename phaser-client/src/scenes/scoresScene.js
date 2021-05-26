@@ -3,7 +3,7 @@ import Card from '../helpers/card';
 export default class scoresScene extends Phaser.Scene {
     constructor() {
         super({
-            key: 'scoresScene'
+            key: 'ScoresScene'
         });
     }
 
@@ -23,11 +23,11 @@ export default class scoresScene extends Phaser.Scene {
     }
 
     create() {
-        this.scene.stop("writeStory");
-        this.scene.stop("waitForStory");
-        this.scene.stop("waitForCards");
-        this.scene.stop("voteScene");
-        this.scene.stop("chooseCard");
+        this.scene.stop("WriteStory");
+        this.scene.stop("WaitForStory");
+        this.scene.stop("WaitForCards");
+        this.scene.stop("VoteScene");
+        this.scene.stop("ChooseCard");
         /**   Game   **/
         let self = this;
         let totalVotes = 0;
@@ -99,7 +99,7 @@ export default class scoresScene extends Phaser.Scene {
         }
 
         this.socket.on('continueNormalPlayer', function () {
-            self.scene.start("waitForStory", { server: self.socket, id: self.id});  
+            self.scene.start("WaitForStory", { server: self.socket, id: self.id});  
         })
 
         this.socket.on('continueStoryteller', function () {
@@ -108,7 +108,7 @@ export default class scoresScene extends Phaser.Scene {
 
         this.socket.on('endGame', function (winners, winnersId) {
             console.log("ScoreScene: " + winners);
-            self.scene.start("endGame", {server: self.socket, id: self.id, winners: winners, winnersId: winnersId});        
+            self.scene.start("EndGame", {server: self.socket, id: self.id, winners: winners, winnersId: winnersId});        
         })
     }
 }

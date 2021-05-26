@@ -3,7 +3,7 @@ import Card from '../helpers/card';
 export default class waitForCards extends Phaser.Scene {
     constructor() {
         super({
-            key: 'waitForCards'
+            key: 'WaitForCards'
         });
     }
 
@@ -50,7 +50,7 @@ export default class waitForCards extends Phaser.Scene {
         }
 
         this.socket.on('cardResults', function (cards) {
-            self.scene.start("voteScene", { server: self.socket, id: self.id, cardNumbers: cards, story: self.story, cardChoice: self.cardChoice, isStoryteller: self.isStoryteller});
+            self.scene.start("VoteScene", { server: self.socket, id: self.id, cardNumbers: cards, story: self.story, cardChoice: self.cardChoice, isStoryteller: self.isStoryteller});
         });
     }
 
