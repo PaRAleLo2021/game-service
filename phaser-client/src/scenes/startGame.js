@@ -93,7 +93,6 @@ export default class StartGame extends Phaser.Scene {
         });
 
         this.socket.on('startGame', function () {
-            //console.log('Game is starting, please be patient!');
             self.scene.launch("waitForStory", { server: self.socket, id: id});
             waitForCreatorText.setVisible(false);
             waitForMorePlayersText.setVisible(false);

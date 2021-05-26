@@ -3,7 +3,7 @@ import Card from '../helpers/card';
 export default class voteScene extends Phaser.Scene {
     constructor() {
         super({
-            key: 'voteScene'
+            key: 'VoteScene'
         });
     }
 
@@ -127,9 +127,6 @@ export default class voteScene extends Phaser.Scene {
             let storytellerCard = data.storytellerCard;
             let gatheredCards = data.gatheredCards;
             let cardVotes = data.cardVotes;
-            //console.log("StorytellerCard " + storytellerCard);
-            //console.log("GatheredCards " + gatheredCards);
-            //console.log("Votes " + cardVotes);
 
             if (self.scene.isActive("scoreScene")) { 
                 self.scene.stop("scoreScene");

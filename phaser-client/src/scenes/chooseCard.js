@@ -3,7 +3,7 @@ import Dealer from "../helpers/dealer";
 export default class chooseCard extends Phaser.Scene {
     constructor() {
         super({
-            key: 'chooseCard'
+            key: 'ChooseCard'
         });
     }
 

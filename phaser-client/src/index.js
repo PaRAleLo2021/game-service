@@ -1,12 +1,21 @@
 import Phaser from "phaser";
 import StartGame from "./scenes/startGame";
-import waitForStory from "./scenes/waitForStory";
-import chooseCard from "./scenes/chooseCard";
-import waitForCards from "./scenes/waitForCards";
+import WaitForStory from "./scenes/waitForStory";
+import ChooseCard from "./scenes/chooseCard";
+import WaitForCards from "./scenes/waitForCards";
 import WriteStory from "./scenes/writeStory";
-import voteScene from "./scenes/voteScene";
-import scoresScene from "./scenes/scoresScene";
-import endGame from "./scenes/endGame";
+import VoteScene from "./scenes/voteScene";
+import ScoresScene from "./scenes/scoresScene";
+import EndGame from "./scenes/endGame";
+
+var startGame = new StartGame();
+var waitForStory = new WaitForStory();
+var chooseCard = new ChooseCard();
+var waitForCards = new WaitForCards();
+var writeStory = new WriteStory();
+var voteScene = new VoteScene();
+var scoresScene = new ScoresScene();
+var endGame = new EndGame();
 
 const config = {
     backgroundColor: '#f3cca3',
@@ -19,17 +28,7 @@ const config = {
     },
     dom: {
         createContainer: true
-    },
-    scene: [
-        StartGame,
-        WriteStory,
-        waitForStory,
-        chooseCard, 
-        waitForCards,
-        voteScene,
-        scoresScene,
-        endGame
-    ],
+    }
 };
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -50,3 +49,14 @@ console.log(username);
 console.log(gameid);
 
 const game = new Phaser.Game(config);
+
+game.scene.add('StartGame', startGame);
+game.scene.add('WriteStory', writeStory);
+game.scene.add('WaitForStory,', waitForStory);
+game.scene.add('ChooseCard', chooseCard);
+game.scene.add("WaitForCards", waitForCards);
+game.scene.add("VoteScene", voteScene);
+game.scene.add("ScoresScene", scoresScene);
+game.scene.add("EndGame", endGame);
+
+game.scene.start('StartGame');

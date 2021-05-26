@@ -4,7 +4,7 @@ import Dealer from "../helpers/dealer";
 export default class waitForStory extends Phaser.Scene {
     constructor() {
         super({
-            key: 'waitForStory'
+            key: 'WaitForStory'
         });
     }
 

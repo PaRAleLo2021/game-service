@@ -3,7 +3,7 @@ import Card from '../helpers/card';
 export default class waitForCards extends Phaser.Scene {
     constructor() {
         super({
-            key: 'waitForCards'
+            key: 'WaitForCards'
         });
     }
 
