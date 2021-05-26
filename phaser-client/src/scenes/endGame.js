@@ -50,7 +50,7 @@ export default class endGame extends Phaser.Scene {
         this.add.text(750, 300, 'Winner(s): ', style);
         console.log(this.winners);
         for (let i=0; i < this.winners.length; i++) {
-            this.add.text(770, 330 + (30 * i), this.winners[i], style);
+            this.add.text(790, 350 + (30 * i), this.winners[i], style);
         }
     }
 }

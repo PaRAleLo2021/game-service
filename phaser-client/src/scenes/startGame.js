@@ -40,7 +40,7 @@ export default class StartGame extends Phaser.Scene {
         let self = this;
         let id = "";
         console.log(this.username);
-        console.log(this.gameid);
+        //console.log(this.gameid);
         /**   Game   **/
         let buttonStartGame = buttonStartGame = this.add.image(300,600, "button").setScale(0.5,0.5).setVisible(false);
 
@@ -93,7 +93,7 @@ export default class StartGame extends Phaser.Scene {
         });
 
         this.socket.on('startGame', function () {
-            console.log('Game is starting, please be patient!');
+            //console.log('Game is starting, please be patient!');
             self.scene.launch("waitForStory", { server: self.socket, id: id});
             waitForCreatorText.setVisible(false);
             waitForMorePlayersText.setVisible(false);

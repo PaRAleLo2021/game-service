@@ -22,13 +22,11 @@ export default class voteScene extends Phaser.Scene {
     }
 
     create() {
-        this.scene.stop("scoreScene");
         /**   Game   **/
         let self = this;
         let selectedCard = null;
         let cardNumbersForScore = this.cardNumbers;
 
-        console.log("Printed cardNumbers - " + this.cardNumbers.length + " : " + this.cardNumbers);
         for (let i = this.cardNumbers.length - 1; i > 0; i--) {
             let j = Math.floor(Math.random() * (i + 1));
             [this.cardNumbers[i], this.cardNumbers[j]] = [this.cardNumbers[j], this.cardNumbers[i]];
@@ -96,7 +94,7 @@ export default class voteScene extends Phaser.Scene {
             buttonSubmitCard.disableInteractive();
             textVote.setVisible(false);
             textWait.setVisible(true);
-            console.log("Emited voted waiting by Storyteller");
+            //console.log("Emited voted waiting by Storyteller");
             self.socket.emit("votedWaiting",self.id);
         }
 
@@ -118,21 +116,27 @@ export default class voteScene extends Phaser.Scene {
                 textVote.setVisible(false);
                 textWait.setVisible(true);
                 self.socket.emit("gatherVotedCards", selectedCard.texture.key, this.id);
-                if(!this.isStoryteller){
-                console.log("Emited voted waiting");
-                self.socket.emit("votedWaiting",self.id);}
+                if(!this.isStoryteller) {
+                    //console.log("Emited voted waiting");
+                    self.socket.emit("votedWaiting",self.id);
+                }
             }
         });
 
-        this.socket.on('voteResults', function (data) {
+        this.socket.once('voteResults', function (data) {
             let storytellerCard = data.storytellerCard;
             let gatheredCards = data.gatheredCards;
             let cardVotes = data.cardVotes;
-            console.log("StorytellerCard " + storytellerCard);
-            console.log("GatheredCards " + gatheredCards);
-            console.log("Votes " + cardVotes);
-            self.scene.start("scoresScene", { server: self.socket, id: self.id,
-                 storytellerCard: storytellerCard, story: self.story, gatheredCards: gatheredCards, cardVotes: cardVotes, isStoryteller: self.isStoryteller});
+            //console.log("StorytellerCard " + storytellerCard);
+            //console.log("GatheredCards " + gatheredCards);
+            //console.log("Votes " + cardVotes);
+
+            if (self.scene.isActive("scoreScene")) { 
+                self.scene.stop("scoreScene");
+                self.scene.start("scoresScene", { server: self.socket, id: self.id, storytellerCard: storytellerCard, story: self.story, gatheredCards: gatheredCards, cardVotes: cardVotes, isStoryteller: self.isStoryteller});
+            }
+            else
+                self.scene.start("scoresScene", { server: self.socket, id: self.id, storytellerCard: storytellerCard, story: self.story, gatheredCards: gatheredCards, cardVotes: cardVotes, isStoryteller: self.isStoryteller});      
         });
     }
 }

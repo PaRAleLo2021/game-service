@@ -66,24 +66,30 @@ export default class WriteStory extends Phaser.Scene {
 
     create() {
         /**   Game   **/
+
+        this.socket.emit("sendRound");
+        this.socket.once('saveRound', function (r) {
+            round = r; 
+            console.log(" ");
+            console.log("WE ARE IN ROUND " + round);
+        }) 
+
         this.isPlayerA = false;
         let self = this;
-        // = this.cardNumbers.slice(0);
+        let round;
         this.dealer = new Dealer(this);      
         let selectedCard = null;
         
         this.socket.emit("dealCards",this.id);
-        this.socket.on('dealCards', function (c) {
-            console.log("I receved cards" + c);
-            //self.cardNumbers = c;
+        this.socket.once('dealCards', function (c) {
+            console.log("Printed cardNumbers - " + c.length + " : " + c);
             for(let i=0; i<c.length; i++){
                 self.cardNumbers[i]=c[i];
                 self.cards[i]=c[i];
             }
             self.dealer.dealCards(self.cardNumbers); 
             
-        })        
-        
+        })   
 
         /**  Score printing  **/
         this.socket.emit("sendScores");
@@ -143,13 +149,21 @@ export default class WriteStory extends Phaser.Scene {
             }
 
             else {
+                buttonSubmitStory.disableInteractive();
                 console.log('My story: ' + storybox.value);
                 console.log('My card: ' + selectedCard.texture.key);
                 self.socket.emit("submitStory", storybox.value, self.id);
                 self.socket.emit("storytellerCard", selectedCard.texture.key);
                 self.socket.emit("gatherCards", selectedCard.texture.key, this.id);
-                self.scene.start("waitForCards", { server: self.socket, id: self.id, cardNumbers: self.cards, story: storybox.value, cardChoice: selectedCard.texture.key, isStoryteller: true});
-                storybox.value = "";
+
+                if (self.scene.isActive("waitForCards")) { 
+                    self.scene.stop("waitForCards");
+                    self.scene.start("waitForCards", { server: self.socket, id: self.id, cardNumbers: self.cards, story: storybox.value, cardChoice: selectedCard.texture.key, isStoryteller: true});
+                }
+                else
+                    self.scene.start("waitForCards", { server: self.socket, id: self.id, cardNumbers: self.cards, story: storybox.value, cardChoice: selectedCard.texture.key, isStoryteller: true});
+                
+                    storybox.value = "";
             }
         });
 

@@ -68,7 +68,7 @@ export default class chooseCard extends Phaser.Scene {
             self.cards[i]=this.cardNumbers[i];
         }
         self.dealer.dealCards(this.cardNumbers);
-        console.log("This are the cards in ChooseCard"+self.cards);
+
         let selectedCard = null;
 
         var style = { 
@@ -122,9 +122,16 @@ export default class chooseCard extends Phaser.Scene {
             }
 
             else {
-                console.log('My card: ' + selectedCard.texture.key);
+                buttonSubmitStory.disableInteractive();
+                //console.log('My card: ' + selectedCard.texture.key);
                 self.socket.emit("gatherCards", selectedCard.texture.key, this.id);
-                self.scene.start("waitForCards", { server: self.socket, id: self.id, cardNumbers: self.cards, story: this.story, cardChoice: selectedCard.texture.key, isStoryteller: false});
+
+                if (self.scene.isActive("waitForCards")) { 
+                    self.scene.stop("waitForCards");
+                    self.scene.start("waitForCards", { server: self.socket, id: self.id, cardNumbers: self.cards, story: this.story, cardChoice: selectedCard.texture.key, isStoryteller: false});
+                }
+                else
+                    self.scene.start("waitForCards", { server: self.socket, id: self.id, cardNumbers: self.cards, story: this.story, cardChoice: selectedCard.texture.key, isStoryteller: false});
             }
         });
 

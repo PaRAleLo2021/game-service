@@ -69,20 +69,27 @@ export default class waitForStory extends Phaser.Scene {
 
     create() {
         /**   Game   **/
+        let round;
+
+        this.socket.emit("sendRound");
+        this.socket.once('saveRound', function (r) {
+            round = r; 
+            console.log(" ");
+            console.log("WE ARE IN ROUND " + round);
+        })
+
         this.dealer = new Dealer(this);
         let self = this;
 
         self.socket.emit("dealCards",this.id);
-        this.socket.on('dealCards', function (c) {
-            console.log("I receved cards" + c);
-            //self.cardNumbers = c;
+        this.socket.once('dealCards', function (c) {
+            console.log("Printed cardNumbers - " + c.length + " : " + c);
             for(let i=0; i<c.length; i++){
                 self.cardNumbers[i]=c[i];
                 self.cards[i]=c[i];
             }
             self.dealer.dealCards(self.cardNumbers);      
         })
-        console.log("This are the cards in WaitForStory"+self.cards);
 
         /**  Score printing  **/
         this.socket.emit("sendScores");
@@ -104,11 +111,15 @@ export default class waitForStory extends Phaser.Scene {
 
         this.add.text(750, 300, 'Wait for storyteller...', style);
 
-        
+        this.socket.once('submittedStory', function (story) {
+            //console.log("Received story! " + story);
 
-        this.socket.on('submittedStory', function (story) {
-            console.log("Received story! " + story);
-            self.scene.start("chooseCard", { server: self.socket, id: self.id, cardNumbers: self.cards, story: story});
+            if (self.scene.isActive("chooseCard")) { 
+                self.scene.stop("chooseCard");
+                self.scene.start("chooseCard", { server: self.socket, id: self.id, cardNumbers: self.cards, story: story});
+            }
+            else
+                self.scene.start("chooseCard", { server: self.socket, id: self.id, cardNumbers: self.cards, story: story});            
         })
 
     }

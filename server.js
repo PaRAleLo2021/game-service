@@ -15,6 +15,7 @@ let storytellerCard;
 let cardVotes = [];
 let self = this;
 let storytellerEmitedWaiting = false;
+let round = 1;
 
 //initialize card numbers array
 let cardNumbers = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18",
@@ -37,7 +38,6 @@ io.on('connection', function (socket) {
 
     if (playersId.length === 1) {
         io.emit('isPlayerA');
-
     };
 
     if (playersId.length >= 3) {
@@ -56,7 +56,7 @@ io.on('connection', function (socket) {
                     cards.push(playersCards[j]);
                 }
                 io.to(playersId[i]).emit('dealCards', cards);
-                console.log("Sent cards"+ cards.length +": " + cards + " left cards " + cardNumbers.length);
+                //console.log("Sent cards"+ cards.length +": " + cards + " left cards " + cardNumbers.length);
             }
         }
     });
@@ -91,7 +91,7 @@ io.on('connection', function (socket) {
     });
 
     socket.on('submitStory', function(story, id) {
-        console.log('-> story: ' + story + " from player " + id);
+        //console.log('-> story: ' + story + " from player " + id);
         for (let i = 0; i < playersId.length; i++) {
             if (playersId[i] !== id) {
                 io.to(playersId[i]).emit('submittedStory', story);
@@ -140,9 +140,9 @@ io.on('connection', function (socket) {
         }
         console.log("Waiting " + waiting + " by " + id);
         if (waiting === playersId.length) {
-            console.log("StorytellerCard " + storytellerCard);
-            console.log("GatheredCards " + gatheredCards);
-            console.log("Votes " + cardVotes);
+            //console.log("StorytellerCard " + storytellerCard);
+            //console.log("GatheredCards " + gatheredCards);
+            //console.log("Votes " + cardVotes);
 
             /*** Scoring Logic ***/
             let storytellerVotes = cardVotes[storyteller];
@@ -179,6 +179,10 @@ io.on('connection', function (socket) {
         io.to(socket.id).emit('printScores', playersUsername, scores);
     });
 
+    socket.on('sendRound', function() {
+        io.to(socket.id).emit('saveRound', round);
+    });
+
     socket.on('continue', function() {
         let winners = [];
         let winnersId = [];
@@ -188,7 +192,7 @@ io.on('connection', function (socket) {
         }
         
         for(let i = 0; i < playersId.length; i++) {
-            if (scores[i] >= 10) {
+            if (scores[i] >= 15) {
                 winners.push(playersUsername[i]);
                 winnersId.push(playersId[i]);
             }
@@ -200,21 +204,22 @@ io.on('connection', function (socket) {
             }
         }
         else {
-
-        if (storyteller === playersId.length - 1)
-            storyleller = 0;
-        else
-            storyteller = storyteller + 1;
-        
-        console.log("I am storyteller: "+playersId[storyteller]);
-
-        for (let i = 0; i < playersId.length; i++) {
-            if (i === storyteller) {
-                io.to(playersId[i]).emit("continueStoryteller");
+            round++;
+            if (storyteller == playersId.length - 1) {
+                storyteller = 0;
             }
             else
-                io.to(playersId[i]).emit("continueNormalPlayer");
-        }
+                storyteller = storyteller + 1;
+        
+            console.log("I am storyteller: "+playersId[storyteller]);
+
+            for (let i = 0; i < playersId.length; i++) {
+                if (i === storyteller) {
+                    io.to(playersId[i]).emit("continueStoryteller");
+                }
+                else
+                    io.to(playersId[i]).emit("continueNormalPlayer");
+            }
         }
     });
 
