@@ -3,6 +3,7 @@ const { SSL_OP_EPHEMERAL_RSA, SSL_OP_SSLEAY_080_CLIENT_DH_BUG } = require('const
 const server = require('express')();
 const http = require('http').createServer(server);
 const io = require('socket.io')(http);
+let gameDB = new Map();
 let playersId = [];
 let storyteller = 0;
 let playersUsername = [];
@@ -30,7 +31,7 @@ function shuffle(array) {
     }
 }
 
-io.on('connection', function (socket) {
+io.on('connection', function (gameId,socket) {
     console.log('A user connected: ' + socket.id);
 
     playersId.push(socket.id);
@@ -44,11 +45,11 @@ io.on('connection', function (socket) {
         io.to(playersId[0]).emit('enableStartButton');
     }
 
-    socket.on('saveUsername', function (username) {
+    socket.on('saveUsername', function (gameId, username) {
         playersUsername.push(username);
     });
 
-    socket.on('dealCards', function (id) {
+    socket.on('dealCards', function (gameId,id) {
         for (let i=0; i<playersId.length; i++) {
             if(playersId[i] == id){
                 let cards=[];
@@ -61,11 +62,11 @@ io.on('connection', function (socket) {
         }
     });
 
-    socket.on('cardPlayed', function (gameObject, isPlayerA) {
+    socket.on('cardPlayed', function (gameId, gameObject, isPlayerA) {
         io.emit('cardPlayed', gameObject, isPlayerA);
     });
 
-    socket.on('startGame', function(id) {
+    socket.on('startGame', function(gameId, id) {
         console.log('Game is starting...');
         // initialize game
         gatheredCards = ["","","",""];
@@ -90,7 +91,7 @@ io.on('connection', function (socket) {
         console.log("Cards left: "+ cardNumbers.length);
     });
 
-    socket.on('submitStory', function(story, id) {
+    socket.on('submitStory', function(gameId, story, id) {
         //console.log('-> story: ' + story + " from player " + id);
         for (let i = 0; i < playersId.length; i++) {
             if (playersId[i] !== id) {
@@ -99,7 +100,7 @@ io.on('connection', function (socket) {
         }
     });
 
-    socket.on('gatherCards', function(card, id) {
+    socket.on('gatherCards', function(gameId, card, id) {
         // remove card from hand
         for(let i=0; i<playersCards.length; i++)
             if(card.includes(playersCards[i]))
@@ -109,7 +110,7 @@ io.on('connection', function (socket) {
                 gatheredCards[i]=card;
     });
 
-    socket.on('gatherVotedCards', function(card, id) {
+    socket.on('gatherVotedCards', function(gameId, card, id) {
         for(i=0; i < gatheredCards.length; i++){
             if(id === playersId[i])
                 gatheredVotedCards[i]=card;
@@ -118,11 +119,11 @@ io.on('connection', function (socket) {
         }
     });
 
-    socket.on('storytellerCard', function(card) {
+    socket.on('storytellerCard', function(gameId, card) {
         storytellerCard = card;
     });
 
-    socket.on('waiting', function() {
+    socket.on('waiting', function(gameId) {
         waiting++;
         if (waiting === playersId.length) {
             for (let i = 0; i < playersId.length; i++) {
@@ -132,7 +133,7 @@ io.on('connection', function (socket) {
         }
     });
 
-    socket.on('votedWaiting', function(id) {
+    socket.on('votedWaiting', function(gameId, id) {
         if(!storytellerEmitedWaiting||id!=playersId[storyteller]){
             if(id==playersId[storyteller])
                 storytellerEmitedWaiting=true;
@@ -175,15 +176,15 @@ io.on('connection', function (socket) {
         }
     });
 
-    socket.on('sendScores', function() {
+    socket.on('sendScores', function(gameId) {
         io.to(socket.id).emit('printScores', playersUsername, scores);
     });
 
-    socket.on('sendRound', function() {
+    socket.on('sendRound', function(gameId) {
         io.to(socket.id).emit('saveRound', round);
     });
 
-    socket.on('continue', function() {
+    socket.on('continue', function(gameId) {
         let winners = [];
         let winnersId = [];
 
@@ -223,7 +224,7 @@ io.on('connection', function (socket) {
         }
     });
 
-    socket.on('disconnect', function () {
+    socket.on('disconnect', function (gameId) {
         let i = playersId.indexOf(socket.id);
         console.log('User ' + i + ' disconnected: ' + socket.id);
 
@@ -232,6 +233,6 @@ io.on('connection', function (socket) {
     });
 });
 
-http.listen(3000, function () {
+http.listen(3000, function (gameId) {
     console.log('Server started!');
 });

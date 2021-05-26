@@ -58,7 +58,7 @@ export default class StartGame extends Phaser.Scene {
             waitForMorePlayersText.setVisible(true);
         });
 
-        this.socket.emit("saveUsername", this.username);
+        this.socket.emit("saveUsername", this.gameid, this.username);
 
         this.socket.on('enableStartButton', function () {
         	if (self.isPlayerA === true) {
@@ -82,8 +82,8 @@ export default class StartGame extends Phaser.Scene {
         var canStartNowText = this.add.text(175, 350, 'You can start the game now! Good luck!', style).setVisible(false);
 
         buttonStartGame.on('pointerdown', () => {
-            self.socket.emit("startGame", id);
-            self.scene.launch("WriteStory", { server: self.socket, id: id});
+            self.socket.emit("startGame", this.gameid, id);
+            self.scene.launch("WriteStory", { gameid: this.gameid, server: self.socket, id: id});
 
             waitForCreatorText.setVisible(false);
             waitForMorePlayersText.setVisible(false);
@@ -93,7 +93,7 @@ export default class StartGame extends Phaser.Scene {
         });
 
         this.socket.on('startGame', function () {
-            self.scene.launch("WaitForStory", { server: self.socket, id: id});
+            self.scene.launch("WaitForStory", { gameid: this.gameid, server: self.socket, id: id});
             waitForCreatorText.setVisible(false);
             waitForMorePlayersText.setVisible(false);
             canStartNowText.setVisible(false);
