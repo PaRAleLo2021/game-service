@@ -4,25 +4,7 @@ const server = require('express')();
 const http = require('http').createServer(server);
 const io = require('socket.io')(http);
 let gameDB = new Map();
-let playersId = [];
-let storyteller = 0;
-let playersUsername = [];
-let playersCards = [];
-let scores = [];
-let gatheredCards = [];
-let gatheredVotedCards = [];
-let waiting = 0;
-let storytellerCard;
-let cardVotes = [];
-let self = this;
-let storytellerEmitedWaiting = false;
-let round = 1;
 
-//initialize card numbers array
-let cardNumbers = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18",
-    "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36"];
-//shuffle
-shuffle(cardNumbers);
 
 function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -31,205 +13,272 @@ function shuffle(array) {
     }
 }
 
-io.on('connection', function (gameId,socket) {
+io.on('connection', function (socket) {
     console.log('A user connected: ' + socket.id);
+    /*let playersId;
+    let scores;
+    let storyteller;
+    let playersUsername;
+    let playersCards;
+    let gatheredCards;
+    let gatheredVotedCards;
+    let waiting;
+    let storytellerCard;
+    let cardVotes;
+    let storytellerEmitedWaiting;
+    let round;*/
 
-    playersId.push(socket.id);
-    scores.push(0);
+    io.to(socket.id).emit('getGameId');
 
-    if (playersId.length === 1) {
-        io.emit('isPlayerA');
-    };
+    socket.on('getGameId', function (gameId ) {
 
-    if (playersId.length >= 3) {
-        io.to(playersId[0]).emit('enableStartButton');
-    }
+        if(!gameDB.has(gameId)){
+            //initialize card numbers array
+            let cardNumbers = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18",
+            "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36"];
+            
+            //shuffle
+            shuffle(cardNumbers);
 
-    socket.on('saveUsername', function (gameId, username) {
-        playersUsername.push(username);
+            gameDB.set(gameId, {
+                playersId: [],
+                storyteller: 0,
+                playersUsername: [],
+                playersCards: [],
+                scores: [],
+                gatheredCards: [],
+                gatheredVotedCards: [],
+                waiting: 0,
+                storytellerCard: "",
+                cardVotes: [],
+                storytellerEmitedWaiting: false,
+                round: 1,
+                cardNumbers: cardNumbers
+                
+            });
+        }
+        let game = gameDB.get(gameId);
+
+        /*playersId = game.get("playersId");
+        scores = game.get("scores");
+        storyteller = game.get("storyteller");
+        playersUsername = game.get("playersUsername");
+        playersCards = game.get("playersCards");
+        gatheredCards = game.get("gatheredCards");
+        gatheredVotedCards = game.get("gatheredVotedCards");
+        waiting = game.get("waiting");
+        storytellerCard = game.get("storytellerCard");
+        cardVotes = game.get("cardVotes");
+        storytellerEmitedWaiting = game.get("storytellerEmitedWaiting");
+        round = game.get("round");*/
+
+        game.playersId.push(socket.id);
+        game.scores.push(0);    
+    
+        if (game.playersId.length === 1) {
+            io.emit('isPlayerA');
+        };
+    
+        if (game.playersId.length >= 3) {
+            io.to(game.playersId[0]).emit('enableStartButton');
+        }
     });
 
-    socket.on('dealCards', function (gameId,id) {
-        for (let i=0; i<playersId.length; i++) {
-            if(playersId[i] == id){
+
+    socket.on('saveUsername', function (gameId, username) {
+        let game = gameDB.get(gameId);
+        game.playersUsername.push(username);
+    });
+
+    socket.on('dealCards', function (gameId, id) {
+        let game = gameDB.get(gameId);
+        for (let i=0; i<game.playersId.length; i++) {
+            if(game.playersId[i] == id){
                 let cards=[];
                 for(let j=i*6; j<6*(i+1); j++){
-                    cards.push(playersCards[j]);
+                    cards.push(game.playersCards[j]);
                 }
-                io.to(playersId[i]).emit('dealCards', cards);
+                io.to(game.playersId[i]).emit('dealCards', cards);
                 //console.log("Sent cards"+ cards.length +": " + cards + " left cards " + cardNumbers.length);
             }
         }
     });
 
-    socket.on('cardPlayed', function (gameId, gameObject, isPlayerA) {
-        io.emit('cardPlayed', gameObject, isPlayerA);
-    });
-
     socket.on('startGame', function(gameId, id) {
+        let game = gameDB.get(gameId);
         console.log('Game is starting...');
         // initialize game
-        gatheredCards = ["","","",""];
-        cardVotes = new Array(playersId.length);
-        for(let i=0; i < playersId.length; i++){
-            cardVotes[i] = 0;
+        game.gatheredCards = ["","","",""];
+        game.cardVotes = new Array(game.playersId.length);
+        for(let i=0; i < game.playersId.length; i++){
+            game.cardVotes[i] = 0;
         }
-        for (let i = 0; i < playersId.length; i++) {
-            if (playersId[i] !== id) {
-                io.to(playersId[i]).emit('startGame');
+        for (let i = 0; i < game.playersId.length; i++) {
+            if (game.playersId[i] !== id) {
+                io.to(game.playersId[i]).emit('startGame');
             }
         }
-        playersCards = [];
+        game.playersCards = [];
         let cards=[];
-        for (let i = 0; i < playersId.length; i++) {
+        for (let i = 0; i < game.playersId.length; i++) {
             for (let j = 0; j < 6; j++) {
-                playersCards.push(cardNumbers.pop());
+                game.playersCards.push(game.cardNumbers.pop());
             }
             cards = [];
         }
-        console.log("All cards added "+ playersCards);
-        console.log("Cards left: "+ cardNumbers.length);
+        console.log("All cards added "+ game.playersCards);
+        console.log("Cards left: "+ game.cardNumbers.length);
     });
 
     socket.on('submitStory', function(gameId, story, id) {
+        let game = gameDB.get(gameId);
         //console.log('-> story: ' + story + " from player " + id);
-        for (let i = 0; i < playersId.length; i++) {
-            if (playersId[i] !== id) {
-                io.to(playersId[i]).emit('submittedStory', story);
+        for (let i = 0; i < game.playersId.length; i++) {
+            if (game.playersId[i] !== id) {
+                io.to(game.playersId[i]).emit('submittedStory', story);
             }
         }
     });
 
     socket.on('gatherCards', function(gameId, card, id) {
+        let game = gameDB.get(gameId);
         // remove card from hand
-        for(let i=0; i<playersCards.length; i++)
-            if(card.includes(playersCards[i]))
-                playersCards[i] = cardNumbers.pop();
-        for(let i=0; i<playersId.length; i++)
-            if(playersId[i]==id)
-                gatheredCards[i]=card;
+        for(let i=0; i<game.playersCards.length; i++)
+            if(card.includes(game.playersCards[i]))
+                game.playersCards[i] = game.cardNumbers.pop();
+        for(let i=0; i<game.playersId.length; i++)
+            if(game.playersId[i]==id)
+                game.gatheredCards[i]=card;
     });
 
     socket.on('gatherVotedCards', function(gameId, card, id) {
-        for(i=0; i < gatheredCards.length; i++){
-            if(id === playersId[i])
-                gatheredVotedCards[i]=card;
-            if(gatheredCards[i] === card)
-                cardVotes[i]++;
+        let game = gameDB.get(gameId);
+        for(i=0; i < game.gatheredCards.length; i++){
+            if(id === game.playersId[i])
+                game.gatheredVotedCards[i]=card;
+            if(game.gatheredCards[i] === card)
+                game.cardVotes[i]++;
         }
     });
 
     socket.on('storytellerCard', function(gameId, card) {
-        storytellerCard = card;
+        let game = gameDB.get(gameId);
+        game.storytellerCard = card;
     });
 
     socket.on('waiting', function(gameId) {
-        waiting++;
-        if (waiting === playersId.length) {
-            for (let i = 0; i < playersId.length; i++) {
-                io.to(playersId[i]).emit('cardResults', gatheredCards);
+        let game = gameDB.get(gameId);
+        game.waiting++;
+        if (game.waiting === game.playersId.length) {
+            for (let i = 0; i < game.playersId.length; i++) {
+                io.to(game.playersId[i]).emit('cardResults', game.gatheredCards);
             }
-            waiting = 0;
+            game.waiting = 0;
         }
     });
 
     socket.on('votedWaiting', function(gameId, id) {
-        if(!storytellerEmitedWaiting||id!=playersId[storyteller]){
-            if(id==playersId[storyteller])
-                storytellerEmitedWaiting=true;
-            waiting++;
+        let game = gameDB.get(gameId);
+        if(!game.storytellerEmitedWaiting||id!=game.playersId[game.storyteller]){
+            if(id==game.playersId[game.storyteller])
+                game.storytellerEmitedWaiting=true;
+            game.waiting++;
         }
-        console.log("Waiting " + waiting + " by " + id);
-        if (waiting === playersId.length) {
+        console.log("Waiting " + game.waiting + " by " + id);
+        if (game.waiting === game.playersId.length) {
             //console.log("StorytellerCard " + storytellerCard);
             //console.log("GatheredCards " + gatheredCards);
             //console.log("Votes " + cardVotes);
 
             /*** Scoring Logic ***/
-            let storytellerVotes = cardVotes[storyteller];
-            if(storytellerVotes===playersId.length-1||storytellerVotes===0){
-                for(let i=0; i<playersId.length; i++){
-                    scores[i]=scores[i]+2;
+            let storytellerVotes = game.cardVotes[game.storyteller];
+            if(storytellerVotes===game.playersId.length-1||storytellerVotes===0){
+                for(let i=0; i<game.playersId.length; i++){
+                    game.scores[i]=game.scores[i]+2;
                 }
-                scores[storyteller]=scores[storyteller]-2;
+                game.scores[storyteller]=game.scores[game.storyteller]-2;
             }
             else{
-                for(let i=0; i<playersId.length; i++){
-                    if(i!=storyteller&&storytellerCard===gatheredVotedCards[i])
-                        scores[i]=scores[i]+3;
+                for(let i=0; i<game.playersId.length; i++){
+                    if(i!=game.storyteller&&game.storytellerCard===game.gatheredVotedCards[i])
+                        game.scores[i]=game.scores[i]+3;
                 }
-                scores[storyteller]=scores[storyteller]+3;
+                game.scores[game.storyteller]=game.scores[game.storyteller]+3;
             }
-            for(let i=0; i<playersId.length; i++)
-                if(i!==storyteller)
-                    scores[i]= scores[i]+cardVotes[i];
+            for(let i=0; i<game.playersId.length; i++)
+                if(i!==game.storyteller)
+                    game.scores[i]= game.scores[i]+game.cardVotes[i];
         
-            for(let i=0; i < playersId.length; i++){
-                gatheredVotedCards[i] = "";
+            for(let i=0; i < game.playersId.length; i++){
+                game.gatheredVotedCards[i] = "";
             }
 
-            for (let i = 0; i < playersId.length; i++) {
-                io.to(playersId[i]).emit('voteResults', {storytellerCard: storytellerCard, gatheredCards: gatheredCards, cardVotes: cardVotes});
+            for (let i = 0; i < game.playersId.length; i++) {
+                io.to(game.playersId[i]).emit('voteResults', {storytellerCard: game.storytellerCard, gatheredCards: game.gatheredCards, cardVotes: game.cardVotes});
             }
-            waiting = 0;
-            storytellerEmitedWaiting=false;
+            game.waiting = 0;
+            game.storytellerEmitedWaiting=false;
         }
     });
 
     socket.on('sendScores', function(gameId) {
-        io.to(socket.id).emit('printScores', playersUsername, scores);
+        let game = gameDB.get(gameId);
+        io.to(socket.id).emit('printScores', game.playersUsername, game.scores);
     });
 
     socket.on('sendRound', function(gameId) {
-        io.to(socket.id).emit('saveRound', round);
+        let game = gameDB.get(gameId);
+        io.to(socket.id).emit('saveRound', game.round);
     });
 
     socket.on('continue', function(gameId) {
+        let game = gameDB.get(gameId);
         let winners = [];
         let winnersId = [];
 
-        for(let i=0; i < playersId.length; i++){
-            cardVotes[i] = 0;
+        for(let i=0; i < game.playersId.length; i++){
+            game.cardVotes[i] = 0;
         }
         
-        for(let i = 0; i < playersId.length; i++) {
-            if (scores[i] >= 15) {
-                winners.push(playersUsername[i]);
-                winnersId.push(playersId[i]);
+        for(let i = 0; i < game.playersId.length; i++) {
+            if (game.scores[i] >= 15) {
+                winners.push(game.playersUsername[i]);
+                winnersId.push(game.playersId[i]);
             }
         }
 
         if (winners.length >= 1) {
-            for (let i = 0; i < playersId.length; i++) {
-                io.to(playersId[i]).emit('endGame', winners, winnersId);
+            for (let i = 0; i < game.playersId.length; i++) {
+                io.to(game.playersId[i]).emit('endGame', winners, winnersId);
             }
         }
         else {
-            round++;
-            if (storyteller == playersId.length - 1) {
-                storyteller = 0;
+            game.round++;
+            if (game.storyteller == game.playersId.length - 1) {
+                game.storyteller = 0;
             }
             else
-                storyteller = storyteller + 1;
+                game.storyteller = game.storyteller + 1;
         
-            console.log("I am storyteller: "+playersId[storyteller]);
+            console.log("I am storyteller: "+game.playersId[game.storyteller]);
 
-            for (let i = 0; i < playersId.length; i++) {
-                if (i === storyteller) {
-                    io.to(playersId[i]).emit("continueStoryteller");
+            for (let i = 0; i < game.playersId.length; i++) {
+                if (i === game.storyteller) {
+                    io.to(game.playersId[i]).emit("continueStoryteller");
                 }
                 else
-                    io.to(playersId[i]).emit("continueNormalPlayer");
+                    io.to(game.playersId[i]).emit("continueNormalPlayer");
             }
         }
     });
 
     socket.on('disconnect', function (gameId) {
-        let i = playersId.indexOf(socket.id);
+        let game = gameDB.get(gameId);
+        let i = game.playersId.indexOf(socket.id);
         console.log('User ' + i + ' disconnected: ' + socket.id);
 
-        playersId = playersId.filter(player => player !== socket.id);
-        scores.pop(i);
+        game.playersId = game.playersId.filter(player => player !== socket.id);
+        game.scores.pop(i);
     });
 });
 

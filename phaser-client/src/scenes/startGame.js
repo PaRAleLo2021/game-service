@@ -46,6 +46,11 @@ export default class StartGame extends Phaser.Scene {
 
         this.socket = io('http://localhost:3000', {transports : ["websocket"] });
 
+        this.socket.on('getGameId', function () {
+        	self.socket.emit("getGameId",self.gameid);
+            self.socket.emit("saveUsername", self.gameid, self.username);
+        });
+
         this.socket.on('connect', function () {
         	console.log('Connected! I am ' + this.id);
             id = this.id;
@@ -57,8 +62,6 @@ export default class StartGame extends Phaser.Scene {
             waitForCreatorText.setVisible(false);
             waitForMorePlayersText.setVisible(true);
         });
-
-        this.socket.emit("saveUsername", this.gameid, this.username);
 
         this.socket.on('enableStartButton', function () {
         	if (self.isPlayerA === true) {
