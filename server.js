@@ -15,18 +15,6 @@ function shuffle(array) {
 
 io.on('connection', function (socket) {
     console.log('A user connected: ' + socket.id);
-    /*let playersId;
-    let scores;
-    let storyteller;
-    let playersUsername;
-    let playersCards;
-    let gatheredCards;
-    let gatheredVotedCards;
-    let waiting;
-    let storytellerCard;
-    let cardVotes;
-    let storytellerEmitedWaiting;
-    let round;*/
 
     io.to(socket.id).emit('getGameId');
 
@@ -59,19 +47,6 @@ io.on('connection', function (socket) {
         }
         let game = gameDB.get(gameId);
 
-        /*playersId = game.get("playersId");
-        scores = game.get("scores");
-        storyteller = game.get("storyteller");
-        playersUsername = game.get("playersUsername");
-        playersCards = game.get("playersCards");
-        gatheredCards = game.get("gatheredCards");
-        gatheredVotedCards = game.get("gatheredVotedCards");
-        waiting = game.get("waiting");
-        storytellerCard = game.get("storytellerCard");
-        cardVotes = game.get("cardVotes");
-        storytellerEmitedWaiting = game.get("storytellerEmitedWaiting");
-        round = game.get("round");*/
-
         game.playersId.push(socket.id);
         game.scores.push(0);    
     
@@ -101,7 +76,6 @@ io.on('connection', function (socket) {
                     cards.push(game.playersCards[j]);
                 }
                 io.to(game.playersId[i]).emit('dealCards', cards);
-                //console.log("Sent cards"+ cards.length +": " + cards + " left cards " + cardNumbers.length);
             }
         }
         gameDB.set(gameId, game);
@@ -195,9 +169,6 @@ io.on('connection', function (socket) {
         }
         console.log("Waiting " + game.waiting + " by " + id);
         if (game.waiting === game.playersId.length) {
-            //console.log("StorytellerCard " + storytellerCard);
-            //console.log("GatheredCards " + gatheredCards);
-            //console.log("Votes " + cardVotes);
 
             /*** Scoring Logic ***/
             let storytellerVotes = game.cardVotes[game.storyteller];
@@ -285,17 +256,11 @@ io.on('connection', function (socket) {
         gameDB.set(gameId, game);
     });
 
-    socket.on('disconnect', function (gameId) {
-        let game = gameDB.get(gameId);
-        let i = game.playersId.indexOf(socket.id);
-        console.log('User ' + i + ' disconnected: ' + socket.id);
-
-        game.playersId = game.playersId.filter(player => player !== socket.id);
-        game.scores.pop(i);
-        gameDB.set(gameId, game);
+    socket.on('disconnect', function () {
+        console.log('User disconnected: ' + socket.id);
     });
 });
 
-http.listen(3000, function (gameId) {
+http.listen(3000, function () {
     console.log('Server started!');
 });
